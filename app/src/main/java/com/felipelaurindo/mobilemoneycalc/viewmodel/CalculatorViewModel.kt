@@ -100,7 +100,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
 
     private fun computeGovernmentTax(taxableAmount: Double, config: ProviderConfig): Double {
         if (!config.hasGovernmentTax || taxableAmount <= config.taxFreeThreshold) return 0.0
-        return taxableAmount * (config.taxPercentage / 100.0)
+        return kotlin.math.ceil(taxableAmount * (config.taxPercentage / 100.0))
     }
 
     private fun recalculate() {
@@ -119,12 +119,22 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
             else -> config.tariffs
         }
 
-        // Check against maximum allowable tariff band
+        // Check against maximum and minimum allowable tariff band
+        val minLimit = activeTariffs.minOfOrNull { it.min }?.toDouble() ?: 1.0
         val maxLimit = activeTariffs.maxOfOrNull { it.max }?.toDouble() ?: 250000.0
+
         if (amount > maxLimit) {
             _uiState.value = CalculationResult(
                 mode = mode,
                 errorMessage = "Maximum transaction limit is ${formatCurrency(maxLimit)} ${config.currency}"
+            )
+            return
+        }
+
+        if (amount < minLimit) {
+            _uiState.value = CalculationResult(
+                mode = mode,
+                errorMessage = "Minimum transaction amount is ${formatCurrency(minLimit)} ${config.currency}"
             )
             return
         }
@@ -134,7 +144,10 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 // 1. Send Only (Wallet to Wallet Transfer)
                 val band = activeTariffs.find { amount >= it.min && amount <= it.max }
                 if (band == null) {
-                    _uiState.value = CalculationResult(mode = mode, errorMessage = "Amount out of range")
+                    _uiState.value = CalculationResult(
+                        mode = mode,
+                        errorMessage = "Minimum transaction amount is ${formatCurrency(minLimit)} ${config.currency}"
+                    )
                     return
                 }
                 val sendFee = band.transferOnNet
@@ -150,12 +163,24 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
 
             CalculationMode.SEND_FOR_CASH -> {
                 // 2. Send for Cash (Reverse Math)
-                val withdrawBand = activeTariffs.find { amount >= it.min && amount <= it.max }
-                if (withdrawBand == null) {
-                    _uiState.value = CalculationResult(mode = mode, errorMessage = "Amount out of range for withdrawal")
+                val minWithdrawal = activeTariffs.filter { it.withdrawalAgent != null }.minOfOrNull { it.min }?.toDouble() ?: minLimit
+                if (amount < minWithdrawal) {
+                    _uiState.value = CalculationResult(
+                        mode = mode,
+                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                    )
                     return
                 }
-                val withdrawalFee = withdrawBand.withdrawalAgent ?: 0.0
+
+                val withdrawBand = activeTariffs.find { amount >= it.min && amount <= it.max }
+                if (withdrawBand == null || withdrawBand.withdrawalAgent == null) {
+                    _uiState.value = CalculationResult(
+                        mode = mode,
+                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                    )
+                    return
+                }
+                val withdrawalFee = withdrawBand.withdrawalAgent
                 val govTax = computeGovernmentTax(amount, config)
                 val subtotal = amount + withdrawalFee + govTax
                 
@@ -183,12 +208,24 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
 
             CalculationMode.WITHDRAW_ONLY -> {
                 // 3. Withdraw Only (Direct Agent Cash-Out)
-                val band = activeTariffs.find { amount >= it.min && amount <= it.max }
-                if (band == null) {
-                    _uiState.value = CalculationResult(mode = mode, errorMessage = "Amount out of range for withdrawal")
+                val minWithdrawal = activeTariffs.filter { it.withdrawalAgent != null }.minOfOrNull { it.min }?.toDouble() ?: minLimit
+                if (amount < minWithdrawal) {
+                    _uiState.value = CalculationResult(
+                        mode = mode,
+                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                    )
                     return
                 }
-                val withdrawalFee = band.withdrawalAgent ?: 0.0
+
+                val band = activeTariffs.find { amount >= it.min && amount <= it.max }
+                if (band == null || band.withdrawalAgent == null) {
+                    _uiState.value = CalculationResult(
+                        mode = mode,
+                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                    )
+                    return
+                }
+                val withdrawalFee = band.withdrawalAgent
                 val govTax = computeGovernmentTax(amount, config)
                 _uiState.value = CalculationResult(
                     mode = mode,
@@ -204,7 +241,10 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 // 4. Pay Merchant (Pochi La Biashara)
                 val band = activeTariffs.find { amount >= it.min && amount <= it.max }
                 if (band == null) {
-                    _uiState.value = CalculationResult(mode = mode, errorMessage = "Amount out of range")
+                    _uiState.value = CalculationResult(
+                        mode = mode,
+                        errorMessage = "Minimum transaction amount is ${formatCurrency(minLimit)} ${config.currency}"
+                    )
                     return
                 }
                 val sendFee = band.transferOnNet

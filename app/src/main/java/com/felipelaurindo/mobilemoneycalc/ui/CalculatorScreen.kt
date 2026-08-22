@@ -42,6 +42,25 @@ fun getCountryFlag(country: String): String = when (country.lowercase()) {
     else -> "🌍"
 }
 
+fun getProviderBrandColor(providerId: String): Color = when (providerId) {
+    "mtn_ug" -> Color(0xFFFFCC00) // MTN Sunshine Yellow
+    "airtel_ug" -> Color(0xFFED1C24) // Airtel Red
+    "vodacom_tz" -> Color(0xFFE60000) // Vodacom Red
+    else -> Color(0xFF00B365) // Safaricom Green
+}
+
+fun getProviderOnBrandColor(providerId: String): Color = when (providerId) {
+    "mtn_ug" -> Color(0xFF191C1E) // High-contrast dark charcoal on yellow
+    else -> Color.White
+}
+
+fun getProviderAccentColor(providerId: String): Color = when (providerId) {
+    "mtn_ug" -> Color(0xFFC67D00) // Rich Amber/Gold for text on white background
+    "airtel_ug" -> Color(0xFFED1C24)
+    "vodacom_tz" -> Color(0xFFE60000)
+    else -> Color(0xFF00B365)
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
@@ -51,6 +70,10 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val selectedProvider by viewModel.selectedProvider.collectAsState()
     val providers = viewModel.providers
 
+    val brandColor = getProviderBrandColor(selectedProvider.id)
+    val onBrandColor = getProviderOnBrandColor(selectedProvider.id)
+    val accentColor = getProviderAccentColor(selectedProvider.id)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -59,53 +82,53 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
         // Top Area (Dropdown, 4-Mode Selector, Input, Breakdown)
         Column(
             modifier = Modifier
-                .weight(1.35f)
+                .weight(1.4f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 6.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             ProviderDropdown(
                 providers = providers,
                 selectedProvider = selectedProvider,
+                brandColor = brandColor,
                 onProviderSelected = { viewModel.selectProvider(it) }
             )
-
-            Spacer(modifier = Modifier.height(8.dp))
 
             // Dynamic Mode Selector (adapts if Pochi is available)
             ModeGridSelector(
                 currentMode = calculationMode,
                 hasPochi = selectedProvider.pochiTariffs != null,
+                brandColor = brandColor,
+                onBrandColor = onBrandColor,
                 onModeSelected = { viewModel.setCalculationMode(it) }
             )
 
-            Spacer(modifier = Modifier.weight(1f))
-
             // Main Input Display
             val amountValue = inputAmount.toDoubleOrNull() ?: 0.0
+            val formattedInputText = "${formatCurrency(amountValue)} ${selectedProvider.currency}"
+            val displayFontSize = if (formattedInputText.length > 13) 26.sp else if (formattedInputText.length > 10) 30.sp else 34.sp
+
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(14.dp),
                 colors = CardDefaults.cardColors(containerColor = CardBackground),
                 border = BorderStroke(1.dp, BorderSubtle),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 Text(
-                    text = "${formatCurrency(amountValue)} ${selectedProvider.currency}",
-                    fontSize = 36.sp,
+                    text = formattedInputText,
+                    fontSize = displayFontSize,
                     fontWeight = FontWeight.ExtraBold,
                     color = TextDark,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                        .padding(vertical = 8.dp, horizontal = 12.dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-
-            Spacer(modifier = Modifier.weight(1f))
 
             // Breakdown Area
             if (uiState.errorMessage.isNotEmpty()) {
@@ -113,19 +136,19 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = ErrorSubtle),
                     border = BorderStroke(1.dp, ErrorRed)
                 ) {
                     Text(
                         text = uiState.errorMessage,
-                        fontSize = 16.sp,
+                        fontSize = 15.sp,
                         fontWeight = FontWeight.Bold,
                         color = ErrorRed,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .padding(12.dp)
                     )
                 }
             } else {
@@ -133,7 +156,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize(),
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = CardBackground),
                     border = BorderStroke(1.dp, BorderSubtle),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -141,83 +164,95 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(14.dp)
+                            .padding(horizontal = 14.dp, vertical = 10.dp)
                     ) {
                         when (uiState.mode) {
                             CalculationMode.SEND_ONLY -> {
                                 BreakdownRow(
                                     label = "Amount to Send",
-                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                                 BreakdownRow(
                                     label = "Transfer Fee",
-                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
                             }
                             CalculationMode.SEND_FOR_CASH -> {
                                 BreakdownRow(
                                     label = "Cash Receiver Needs",
-                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                                 BreakdownRow(
                                     label = "Withdrawal Fee to Cover",
-                                    value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
                                 if (uiState.governmentTax > 0.0) {
-                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Spacer(modifier = Modifier.height(4.dp))
                                     BreakdownRow(
                                         label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
-                                        value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}"
+                                        value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}",
+                                        accentColor = accentColor
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                                 BreakdownRow(
                                     label = "Send Fee",
-                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                                 BreakdownRow(
                                     label = "You Must Transfer",
                                     value = "${formatCurrency(uiState.youMustSend)} ${selectedProvider.currency}",
-                                    highlight = true
+                                    highlight = true,
+                                    accentColor = accentColor
                                 )
                             }
                             CalculationMode.WITHDRAW_ONLY -> {
                                 BreakdownRow(
                                     label = "Cash to Withdraw",
-                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                                 BreakdownRow(
                                     label = "Agent Withdrawal Fee",
-                                    value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
                                 if (uiState.governmentTax > 0.0) {
-                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Spacer(modifier = Modifier.height(4.dp))
                                     BreakdownRow(
                                         label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
-                                        value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}"
+                                        value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}",
+                                        accentColor = accentColor
                                     )
                                 }
                             }
                             CalculationMode.PAY_POCHI -> {
                                 BreakdownRow(
                                     label = "Payment to Merchant",
-                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(6.dp))
+                                Spacer(modifier = Modifier.height(4.dp))
                                 BreakdownRow(
                                     label = "Pochi Merchant Fee",
-                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
+                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
+                                    accentColor = accentColor
                                 )
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
                         HorizontalDivider(color = BorderSubtle, thickness = 1.dp)
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(6.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -226,7 +261,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                         ) {
                             Text(
                                 text = if (uiState.mode == CalculationMode.WITHDRAW_ONLY) "Total from Balance" else "Total Deducted",
-                                fontSize = 16.sp,
+                                fontSize = 15.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = TextDark
                             )
@@ -243,11 +278,13 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                                 },
                                 label = "TotalAmountAnimation"
                             ) { targetTotal ->
+                                val formattedTotal = "${formatCurrency(targetTotal)} ${selectedProvider.currency}"
+                                val totalFontSize = if (formattedTotal.length > 13) 18.sp else if (formattedTotal.length > 10) 20.sp else 22.sp
                                 Text(
-                                    text = "${formatCurrency(targetTotal)} ${selectedProvider.currency}",
-                                    fontSize = 22.sp,
+                                    text = formattedTotal,
+                                    fontSize = totalFontSize,
                                     fontWeight = FontWeight.ExtraBold,
-                                    color = PrimaryActive
+                                    color = accentColor
                                 )
                             }
                         }
@@ -271,6 +308,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
 fun ProviderDropdown(
     providers: List<ProviderConfig>,
     selectedProvider: ProviderConfig,
+    brandColor: Color,
     onProviderSelected: (ProviderConfig) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -286,8 +324,8 @@ fun ProviderDropdown(
             shape = RoundedCornerShape(12.dp),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
-                focusedBorderColor = PrimaryActive,
-                unfocusedBorderColor = BorderSubtle,
+                focusedBorderColor = brandColor,
+                unfocusedBorderColor = brandColor.copy(alpha = 0.8f),
                 focusedTextColor = TextDark,
                 unfocusedTextColor = TextDark,
                 focusedContainerColor = CardBackground,
@@ -325,6 +363,8 @@ fun ProviderDropdown(
 fun ModeGridSelector(
     currentMode: CalculationMode,
     hasPochi: Boolean,
+    brandColor: Color,
+    onBrandColor: Color,
     onModeSelected: (CalculationMode) -> Unit
 ) {
     Column(
@@ -338,12 +378,16 @@ fun ModeGridSelector(
             ModeButton(
                 title = "📤 Send Only",
                 isSelected = currentMode == CalculationMode.SEND_ONLY,
+                brandColor = brandColor,
+                onBrandColor = onBrandColor,
                 onClick = { onModeSelected(CalculationMode.SEND_ONLY) },
                 modifier = Modifier.weight(1f)
             )
             ModeButton(
                 title = "🤝 Send for Cash",
                 isSelected = currentMode == CalculationMode.SEND_FOR_CASH,
+                brandColor = brandColor,
+                onBrandColor = onBrandColor,
                 onClick = { onModeSelected(CalculationMode.SEND_FOR_CASH) },
                 modifier = Modifier.weight(1f)
             )
@@ -355,6 +399,8 @@ fun ModeGridSelector(
             ModeButton(
                 title = "💵 Withdraw",
                 isSelected = currentMode == CalculationMode.WITHDRAW_ONLY,
+                brandColor = brandColor,
+                onBrandColor = onBrandColor,
                 onClick = { onModeSelected(CalculationMode.WITHDRAW_ONLY) },
                 modifier = Modifier.weight(1f)
             )
@@ -362,6 +408,8 @@ fun ModeGridSelector(
                 ModeButton(
                     title = "🏪 Pay Pochi",
                     isSelected = currentMode == CalculationMode.PAY_POCHI,
+                    brandColor = brandColor,
+                    onBrandColor = onBrandColor,
                     onClick = { onModeSelected(CalculationMode.PAY_POCHI) },
                     modifier = Modifier.weight(1f)
                 )
@@ -374,20 +422,26 @@ fun ModeGridSelector(
 fun ModeButton(
     title: String,
     isSelected: Boolean,
+    brandColor: Color,
+    onBrandColor: Color,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (isSelected) {
         Button(
             onClick = onClick,
-            colors = ButtonDefaults.buttonColors(containerColor = PrimaryActive),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = brandColor,
+                contentColor = onBrandColor
+            ),
             shape = RoundedCornerShape(10.dp),
             contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
             modifier = modifier
         ) {
             Text(
                 text = title,
-                color = Color.White,
+                color = onBrandColor,
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.sp,
                 maxLines = 1,
@@ -419,7 +473,8 @@ fun ModeButton(
 fun BreakdownRow(
     label: String,
     value: String,
-    highlight: Boolean = false
+    highlight: Boolean = false,
+    accentColor: Color = PrimaryActive
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -429,14 +484,14 @@ fun BreakdownRow(
         Text(
             text = label,
             fontSize = 14.sp,
-            color = if (highlight) PrimaryActive else TextGray,
+            color = if (highlight) accentColor else TextGray,
             fontWeight = if (highlight) FontWeight.Bold else FontWeight.Normal
         )
         Text(
             text = value,
             fontSize = 14.sp,
             fontWeight = if (highlight) FontWeight.ExtraBold else FontWeight.SemiBold,
-            color = if (highlight) PrimaryActive else TextDark
+            color = if (highlight) accentColor else TextDark
         )
     }
 }

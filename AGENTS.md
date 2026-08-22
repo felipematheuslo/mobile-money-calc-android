@@ -41,21 +41,27 @@ The app covers all 4 fundamental real-world Mobile Money consumer flows:
 *   **Outputs:** Payment Amount + Discounted Merchant Fee (capped at 50 KES) $\rightarrow$ **Total Deducted**.
 
 ### Reactive Limit Protection
-If the entered amount exceeds the provider's max transaction limit (e.g., 250,000 KES), numerical outputs are safely hidden and replaced with an instant, clear warning message: *"Maximum transaction limit is 250,000 KES"*.
+The app continuously monitors regulatory and provider transaction bounds:
+* **Maximum Transaction Limit:** If the entered amount exceeds the provider's max transaction cap (e.g., `250,000 KES` for Safaricom or `5,000,000 UGX` for MTN), numeric outputs are hidden and replaced with an instant warning: *"Maximum transaction limit is [Cap] [Currency]"*.
+* **Minimum Limit Protection:** If an amount is below the provider's minimum allowed transfer or agent withdrawal threshold (e.g., `500 UGX` in Uganda or `50 KES` for Kenyan cash-outs), a clear warning is displayed: *"Minimum withdrawal amount is [Min] [Currency]"* or *"Minimum transaction amount is [Min] [Currency]"*.
 
-## 4. User Interface & Design System ("Lightweight Premium")
+## 4. User Interface & Dynamic Operator Theming ("Lightweight Premium")
 
 The UI is optimized for fast, one-handed operation in high-paced commercial environments (kiosks, markets, street vendors):
 
 *   **Custom Full-Screen Numpad:** Standard Android OS keyboard is strictly disabled. Large squarcle keys (`RoundedCornerShape(16.dp)`) take up the bottom ~45% of the screen for instant thumb reach.
-*   **Brand Identity Colors:**
-    *   Primary Accent: **Safaricom Green (`#00B365`)**
+*   **Dynamic Multi-Carrier Brand Theming:**
+    *   🇰🇪 **Safaricom M-Pesa:** Safaricom Green (`#00B365`) with white button text and green accents.
+    *   🇺🇬 **MTN Mobile Money:** MTN Sunshine Yellow (`#FFCC00`) with high-contrast dark charcoal button text (`#191C1E`) and rich amber text highlights (`#C67D00`).
+    *   🇺🇬 **Airtel Money:** Airtel Red (`#ED1C24`) with white button text.
+    *   🇹🇿 **Vodacom M-Pesa:** Vodacom Red (`#E60000`) with white button text.
     *   Background: Clean cool off-white (`#F7F9FA`)
     *   Text: Deep charcoal (`#191C1E`) for high outdoor sunlight readability
     *   Clear Button: Soft error pill (`#FFFFEBEE` / `#E53935`)
+*   **Adaptive 5-Row Layout Engine:** Dynamically renders between 2 to 5 breakdown rows (accommodating statutory government taxes, agent fees, transfer subtotals, and final totals) without vertical clipping or overlap.
 *   **Hardware-Accelerated Micro-Animations:**
     *   `AnimatedContent` for smooth sliding transitions on total figures.
-    *   `animateContentSize` on breakdown cards when toggling between Person and Pochi modes.
+    *   `animateContentSize` on breakdown cards when toggling between modes.
     *   **Zero external assets (0 KB Lottie/GIF overhead)** to preserve RAM and battery.
 
 ## 5. Universal Data Schema & Mock Data
@@ -135,8 +141,8 @@ data class TariffBand(
 ## 6. Strategic Decisions & Product Roadmap
 
 *   **Multi-Country Plug & Play:** The app is pre-configured with embedded schemas for:
-    *   🇰🇪 **Kenya:** Safaricom M-Pesa (with Pochi La Biashara support).
-    *   🇺🇬 **Uganda:** MTN Mobile Money & Airtel Money (with 0.5% statutory government excise tax engine).
+    *   🇰🇪 **Kenya:** Safaricom M-Pesa ([Official Source](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits)).
+    *   🇺🇬 **Uganda:** MTN Mobile Money ([Official Source](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/)) & Airtel Money (with 0.5% statutory government excise tax engine).
     *   🇹🇿 **Tanzania:** Vodacom M-Pesa (TZS currency formatting and high-volume transaction bands).
 *   **Dynamic UI Adaptability:** If a network provider does not feature a merchant wallet like Pochi, the UI dynamically collapses to the 3 standard options without empty space or error states.
 *   **Government Tax Calculation Engine:** Automatically checks `hasGovernmentTax` and applies percentage-based or flat-rate taxes above thresholds, displaying them transparently in the breakdown.

@@ -25,7 +25,8 @@ The app eliminates arguments at payment counters and eliminates mental math erro
 * **The Math:** Applies discounted merchant transfer rates (capped at a flat **50 KES fee** for amounts over 2,500 KES up to 250,000 KES). No withdrawal fee is charged to the sender.
 
 ### 5. 🛡️ Reactive Limit Protection
-* Instantly alerts the user when an entered amount exceeds provider limits (e.g. 250,000 KES).
+* **Maximum Cap Warnings:** Instantly alerts the user when an entered amount exceeds provider limits (e.g. `250,000 KES` or `5,000,000 UGX`).
+* **Minimum Threshold Warnings:** Transparently informs when an amount is below the provider's minimum allowed transfer or agent withdrawal threshold (e.g. `500 UGX` or `50 KES`).
 
 ### 6. ⌨️ Large-Button Custom Numpad
 * Replaces the standard OS keyboard with an ergonomic, thumb-friendly numeric keypad covering the bottom half of the screen for one-handed operation. Zero taps to open/close keyboard.
@@ -36,12 +37,12 @@ The app eliminates arguments at payment counters and eliminates mental math erro
 
 The app's offline JSON repository is pre-loaded with official tariff structures for major East African networks:
 
-| Country | Operator | Currency | Features Supported |
-| :--- | :--- | :--- | :--- |
-| 🇰🇪 **Kenya** | **Safaricom M-Pesa** | `KES` | Send, Reverse Math, Agent Cash-Out, Pochi La Biashara |
-| 🇺🇬 **Uganda** | **MTN Mobile Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax |
-| 🇺🇬 **Uganda** | **Airtel Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax |
-| 🇹🇿 **Tanzania** | **Vodacom M-Pesa** | `TZS` | Send, Reverse Math, Agent Cash-Out, High-volume bands |
+| Country | Operator | Currency | Features Supported | Official Reference |
+| :--- | :--- | :--- | :--- | :--- |
+| 🇰🇪 **Kenya** | **Safaricom M-Pesa** | `KES` | Send, Reverse Math, Agent Cash-Out, Pochi La Biashara | [Safaricom Tariffs](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits) |
+| 🇺🇬 **Uganda** | **MTN Mobile Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | [MTN Uganda Tariffs](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/) |
+| 🇺🇬 **Uganda** | **Airtel Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | Official Tiered Schedule |
+| 🇹🇿 **Tanzania** | **Vodacom M-Pesa** | `TZS` | Send, Reverse Math, Agent Cash-Out, High-volume bands | Official Tiered Schedule |
 
 ---
 
@@ -49,8 +50,9 @@ The app's offline JSON repository is pre-loaded with official tariff structures 
 
 Designed specifically for optimal performance on entry-level Android devices (1GB–3GB RAM, Android Go) prevalent in the African market:
 
+* **Dynamic Multi-Carrier Brand Theming:** Automatically adapts primary colors and UI accents to the active provider (🟢 Safaricom Green, 🟡 MTN Sunshine Yellow with high-contrast text, 🔴 Airtel Red, 🔴 Vodacom Red).
+* **Adaptive 5-Row Layout Engine:** Smoothly accommodates up to 5 breakdown rows (including statutory government taxes) without vertical clipping or overlap.
 * **Country Flag Dropdown:** Instant context switching with flags (🇰🇪, 🇺🇬, 🇹🇿).
-* **Safaricom Green Accent (`#00B365`):** Instantly recognizable brand identity.
 * **Extreme Sunlight Readability:** High-contrast typography with deep charcoal (`#191C1E`) and crisp labels.
 * **Hardware-Accelerated Native Micro-Animations:** Fluid transitions (`AnimatedContent` and `animateContentSize`) with **0 KB external graphic assets**.
 * **Instant Cold Start:** Opens and is ready to type in under 100ms.

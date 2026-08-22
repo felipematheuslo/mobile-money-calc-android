@@ -2,6 +2,8 @@
 
 Official reference guide detailing all transaction rules, regulatory thresholds, and tariff structures for Safaricom M-Pesa in Kenya.
 
+* **Official Source:** [Safaricom Consumer Tariffs & Limits](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits)
+
 ---
 
 ## 1. M-Pesa Account Limits & Rules
