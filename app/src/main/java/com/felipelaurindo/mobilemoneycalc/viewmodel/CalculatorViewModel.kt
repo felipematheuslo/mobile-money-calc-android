@@ -18,7 +18,10 @@ data class CalculationResult(
 
 class CalculatorViewModel : ViewModel() {
 
-    private val config: ProviderConfig = MockData.getConfig()
+    val providers: List<ProviderConfig> = MockData.getProviders()
+
+    private val _selectedProvider = MutableStateFlow(providers.first())
+    val selectedProvider: StateFlow<ProviderConfig> = _selectedProvider.asStateFlow()
 
     private val _inputAmount = MutableStateFlow("0")
     val inputAmount: StateFlow<String> = _inputAmount.asStateFlow()
@@ -30,6 +33,11 @@ class CalculatorViewModel : ViewModel() {
     val uiState: StateFlow<CalculationResult> = _uiState.asStateFlow()
 
     init {
+        recalculate()
+    }
+
+    fun selectProvider(provider: ProviderConfig) {
+        _selectedProvider.value = provider
         recalculate()
     }
 
@@ -67,7 +75,7 @@ class CalculatorViewModel : ViewModel() {
         val inputAmount = _inputAmount.value
         val isSendingMode = _isSendingMode.value
         val amount = inputAmount.toDoubleOrNull() ?: 0.0
-        val config = MockData.getConfig()
+        val config = _selectedProvider.value
         
         if (amount == 0.0) {
             _uiState.value = CalculationResult()
