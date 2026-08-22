@@ -1,8 +1,8 @@
 package com.felipelaurindo.mobilemoneycalc.ui
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -11,43 +11,57 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.felipelaurindo.mobilemoneycalc.model.ProviderConfig
-import com.felipelaurindo.mobilemoneycalc.viewmodel.CalculationResult
+import com.felipelaurindo.mobilemoneycalc.viewmodel.CalculationMode
 import com.felipelaurindo.mobilemoneycalc.viewmodel.CalculatorViewModel
 
-val DarkBackground = Color(0xFF121212)
-val LightBlueAccent = Color(0xFFA8C7FA)
-val GrayText = Color(0xFF9AA0A6)
-val PinkAlert = Color(0xFFF2B8B5)
-val DarkGrayToggle = Color(0xFF303134)
+// Brand-tailored high performance color palette (Kenya Safaricom theme)
+val LightBackground = Color(0xFFF7F9FA)
+val CardBackground = Color.White
+val PrimaryActive = Color(0xFF00B365) // Safaricom Green
+val PrimarySubtle = Color(0xFFE8F8F1)
+val ErrorRed = Color(0xFFE53935)
+val ErrorSubtle = Color(0xFFFFEBEE)
+val TextDark = Color(0xFF191C1E)
+val TextGray = Color(0xFF6B7280)
+val BorderSubtle = Color(0xFFE5E7EB)
+
+fun getCountryFlag(country: String): String = when (country.lowercase()) {
+    "kenya" -> "🇰🇪"
+    "uganda" -> "🇺🇬"
+    "tanzania" -> "🇹🇿"
+    "ghana" -> "🇬🇭"
+    "rwanda" -> "🇷🇼"
+    else -> "🌍"
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val uiState by viewModel.uiState.collectAsState()
     val inputAmount by viewModel.inputAmount.collectAsState()
-    val isSendingMode by viewModel.isSendingMode.collectAsState()
+    val calculationMode by viewModel.calculationMode.collectAsState()
     val selectedProvider by viewModel.selectedProvider.collectAsState()
     val providers = viewModel.providers
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkBackground)
+            .background(LightBackground)
     ) {
-        // Top Area (Dropdown, Toggle, Input, Breakdown)
+        // Top Area (Dropdown, 4-Mode Selector, Input, Breakdown)
         Column(
             modifier = Modifier
-                .weight(1f)
+                .weight(1.35f)
                 .fillMaxWidth()
-                .padding(24.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
@@ -57,72 +71,186 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                 onProviderSelected = { viewModel.selectProvider(it) }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            ModeSelector(
-                isSendingMode = isSendingMode,
-                onToggleMode = { viewModel.toggleMode(it) }
+            // Dynamic Mode Selector (adapts if Pochi is available)
+            ModeGridSelector(
+                currentMode = calculationMode,
+                hasPochi = selectedProvider.pochiTariffs != null,
+                onModeSelected = { viewModel.setCalculationMode(it) }
             )
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Main Input
+            // Main Input Display
             val amountValue = inputAmount.toDoubleOrNull() ?: 0.0
-            Text(
-                text = "${formatCurrency(amountValue)} ${selectedProvider.currency}",
-                fontSize = 56.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                textAlign = TextAlign.Center,
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                maxLines = 1
-            )
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBackground),
+                border = BorderStroke(1.dp, BorderSubtle),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Text(
+                    text = "${formatCurrency(amountValue)} ${selectedProvider.currency}",
+                    fontSize = 36.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = TextDark,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
 
             Spacer(modifier = Modifier.weight(1f))
 
             // Breakdown Area
             if (uiState.errorMessage.isNotEmpty()) {
-                Text(
-                    text = uiState.errorMessage,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = PinkAlert,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.weight(1f))
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = ErrorSubtle),
+                    border = BorderStroke(1.dp, ErrorRed)
+                ) {
+                    Text(
+                        text = uiState.errorMessage,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = ErrorRed,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    )
+                }
             } else {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    BreakdownRow(
-                        label = "Send Fee",
-                        value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    BreakdownRow(
-                        label = if (isSendingMode) "Withdrawal Fee" else "Withdrawal Fee to Cover",
-                        value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}"
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    HorizontalDivider(color = DarkGrayToggle, thickness = 1.dp)
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground),
+                    border = BorderStroke(1.dp, BorderSubtle),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(14.dp)
                     ) {
-                        Text(
-                            text = "Total Deducted",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = LightBlueAccent
-                        )
-                        Text(
-                            text = "${formatCurrency(uiState.totalRequired)} ${selectedProvider.currency}",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = LightBlueAccent
-                        )
+                        when (uiState.mode) {
+                            CalculationMode.SEND_ONLY -> {
+                                BreakdownRow(
+                                    label = "Amount to Send",
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                BreakdownRow(
+                                    label = "Transfer Fee",
+                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
+                                )
+                            }
+                            CalculationMode.SEND_FOR_CASH -> {
+                                BreakdownRow(
+                                    label = "Cash Receiver Needs",
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                BreakdownRow(
+                                    label = "Withdrawal Fee to Cover",
+                                    value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}"
+                                )
+                                if (uiState.governmentTax > 0.0) {
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    BreakdownRow(
+                                        label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
+                                        value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}"
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                BreakdownRow(
+                                    label = "Send Fee",
+                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                BreakdownRow(
+                                    label = "You Must Transfer",
+                                    value = "${formatCurrency(uiState.youMustSend)} ${selectedProvider.currency}",
+                                    highlight = true
+                                )
+                            }
+                            CalculationMode.WITHDRAW_ONLY -> {
+                                BreakdownRow(
+                                    label = "Cash to Withdraw",
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                BreakdownRow(
+                                    label = "Agent Withdrawal Fee",
+                                    value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}"
+                                )
+                                if (uiState.governmentTax > 0.0) {
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    BreakdownRow(
+                                        label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
+                                        value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}"
+                                    )
+                                }
+                            }
+                            CalculationMode.PAY_POCHI -> {
+                                BreakdownRow(
+                                    label = "Payment to Merchant",
+                                    value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}"
+                                )
+                                Spacer(modifier = Modifier.height(6.dp))
+                                BreakdownRow(
+                                    label = "Pochi Merchant Fee",
+                                    value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}"
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                        HorizontalDivider(color = BorderSubtle, thickness = 1.dp)
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = if (uiState.mode == CalculationMode.WITHDRAW_ONLY) "Total from Balance" else "Total Deducted",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = TextDark
+                            )
+                            AnimatedContent(
+                                targetState = uiState.totalRequired,
+                                transitionSpec = {
+                                    if (targetState > initialState) {
+                                        (slideInVertically { height -> height } + fadeIn()) togetherWith
+                                                (slideOutVertically { height -> -height } + fadeOut())
+                                    } else {
+                                        (slideInVertically { height -> -height } + fadeIn()) togetherWith
+                                                (slideOutVertically { height -> height } + fadeOut())
+                                    }
+                                },
+                                label = "TotalAmountAnimation"
+                            ) { targetTotal ->
+                                Text(
+                                    text = "${formatCurrency(targetTotal)} ${selectedProvider.currency}",
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = PrimaryActive
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -133,7 +261,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
             onNumberClick = { viewModel.onNumberClick(it) },
             onClearClick = { viewModel.onClearClick() },
             onDeleteClick = { viewModel.onDeleteClick() },
-            modifier = Modifier.weight(1f) // Takes bottom 50%
+            modifier = Modifier.weight(1f)
         )
     }
 }
@@ -152,15 +280,18 @@ fun ProviderDropdown(
         onExpandedChange = { expanded = !expanded }
     ) {
         OutlinedTextField(
-            value = selectedProvider.providerName,
+            value = "${getCountryFlag(selectedProvider.country)} ${selectedProvider.country} - ${selectedProvider.providerName} (${selectedProvider.currency})",
             onValueChange = {},
             readOnly = true,
+            shape = RoundedCornerShape(12.dp),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(
-                focusedBorderColor = LightBlueAccent,
-                unfocusedBorderColor = GrayText,
-                focusedTextColor = Color.White,
-                unfocusedTextColor = Color.White
+                focusedBorderColor = PrimaryActive,
+                unfocusedBorderColor = BorderSubtle,
+                focusedTextColor = TextDark,
+                unfocusedTextColor = TextDark,
+                focusedContainerColor = CardBackground,
+                unfocusedContainerColor = CardBackground
             ),
             modifier = Modifier
                 .menuAnchor(type = ExposedDropdownMenuAnchorType.PrimaryNotEditable)
@@ -169,11 +300,17 @@ fun ProviderDropdown(
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false },
-            modifier = Modifier.background(DarkGrayToggle)
+            modifier = Modifier.background(CardBackground)
         ) {
             providers.forEach { provider ->
                 DropdownMenuItem(
-                    text = { Text(provider.providerName, color = Color.White) },
+                    text = { 
+                        Text(
+                            text = "${getCountryFlag(provider.country)} ${provider.country} - ${provider.providerName} (${provider.currency})",
+                            color = TextDark,
+                            fontWeight = FontWeight.Medium
+                        )
+                    },
                     onClick = {
                         onProviderSelected(provider)
                         expanded = false
@@ -185,82 +322,121 @@ fun ProviderDropdown(
 }
 
 @Composable
-fun ModeSelector(
-    isSendingMode: Boolean,
-    onToggleMode: (Boolean) -> Unit
+fun ModeGridSelector(
+    currentMode: CalculationMode,
+    hasPochi: Boolean,
+    onModeSelected: (CalculationMode) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(32.dp))
-            .background(DarkGrayToggle)
-            .padding(4.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        ModeButton(
-            text = "I am sending",
-            isSelected = isSendingMode,
-            onClick = { onToggleMode(true) },
-            modifier = Modifier.weight(1f)
-        )
-        ModeButton(
-            text = "They must receive",
-            isSelected = !isSendingMode,
-            onClick = { onToggleMode(false) },
-            modifier = Modifier.weight(1f)
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            ModeButton(
+                title = "📤 Send Only",
+                isSelected = currentMode == CalculationMode.SEND_ONLY,
+                onClick = { onModeSelected(CalculationMode.SEND_ONLY) },
+                modifier = Modifier.weight(1f)
+            )
+            ModeButton(
+                title = "🤝 Send for Cash",
+                isSelected = currentMode == CalculationMode.SEND_FOR_CASH,
+                onClick = { onModeSelected(CalculationMode.SEND_FOR_CASH) },
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            ModeButton(
+                title = "💵 Withdraw",
+                isSelected = currentMode == CalculationMode.WITHDRAW_ONLY,
+                onClick = { onModeSelected(CalculationMode.WITHDRAW_ONLY) },
+                modifier = Modifier.weight(1f)
+            )
+            if (hasPochi) {
+                ModeButton(
+                    title = "🏪 Pay Pochi",
+                    isSelected = currentMode == CalculationMode.PAY_POCHI,
+                    onClick = { onModeSelected(CalculationMode.PAY_POCHI) },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
     }
 }
 
 @Composable
 fun ModeButton(
-    text: String,
+    title: String,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) LightBlueAccent else Color.Transparent,
-        label = "ModeButtonBackground"
-    )
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) DarkBackground else GrayText,
-        label = "ModeButtonText"
-    )
-
-    Box(
-        modifier = modifier
-            .clip(RoundedCornerShape(28.dp))
-            .background(backgroundColor)
-            .clickable(onClick = onClick)
-            .padding(vertical = 12.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            color = textColor,
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
-        )
+    if (isSelected) {
+        Button(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(containerColor = PrimaryActive),
+            shape = RoundedCornerShape(10.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            modifier = modifier
+        ) {
+            Text(
+                text = title,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    } else {
+        OutlinedButton(
+            onClick = onClick,
+            shape = RoundedCornerShape(10.dp),
+            border = BorderStroke(1.dp, BorderSubtle),
+            colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            modifier = modifier
+        ) {
+            Text(
+                text = title,
+                color = TextDark,
+                fontWeight = FontWeight.Medium,
+                fontSize = 13.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
 @Composable
-fun BreakdownRow(label: String, value: String) {
+fun BreakdownRow(
+    label: String,
+    value: String,
+    highlight: Boolean = false
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = label,
-            fontSize = 16.sp,
-            color = GrayText
+            fontSize = 14.sp,
+            color = if (highlight) PrimaryActive else TextGray,
+            fontWeight = if (highlight) FontWeight.Bold else FontWeight.Normal
         )
         Text(
             text = value,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.White
+            fontSize = 14.sp,
+            fontWeight = if (highlight) FontWeight.ExtraBold else FontWeight.SemiBold,
+            color = if (highlight) PrimaryActive else TextDark
         )
     }
 }
@@ -275,31 +451,32 @@ fun CustomNumpad(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 16.dp, start = 8.dp, end = 8.dp)
+            .padding(bottom = 12.dp, start = 16.dp, end = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        val buttonModifier = Modifier
+        val rowModifier = Modifier
             .weight(1f)
-            .fillMaxHeight()
-        
-        Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            NumpadButton(text = "1", onClick = { onNumberClick("1") }, modifier = buttonModifier)
-            NumpadButton(text = "2", onClick = { onNumberClick("2") }, modifier = buttonModifier)
-            NumpadButton(text = "3", onClick = { onNumberClick("3") }, modifier = buttonModifier)
+            .fillMaxWidth()
+
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            NumpadButton(text = "1", onClick = { onNumberClick("1") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "2", onClick = { onNumberClick("2") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "3", onClick = { onNumberClick("3") }, modifier = Modifier.weight(1f))
         }
-        Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            NumpadButton(text = "4", onClick = { onNumberClick("4") }, modifier = buttonModifier)
-            NumpadButton(text = "5", onClick = { onNumberClick("5") }, modifier = buttonModifier)
-            NumpadButton(text = "6", onClick = { onNumberClick("6") }, modifier = buttonModifier)
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            NumpadButton(text = "4", onClick = { onNumberClick("4") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "5", onClick = { onNumberClick("5") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "6", onClick = { onNumberClick("6") }, modifier = Modifier.weight(1f))
         }
-        Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            NumpadButton(text = "7", onClick = { onNumberClick("7") }, modifier = buttonModifier)
-            NumpadButton(text = "8", onClick = { onNumberClick("8") }, modifier = buttonModifier)
-            NumpadButton(text = "9", onClick = { onNumberClick("9") }, modifier = buttonModifier)
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            NumpadButton(text = "7", onClick = { onNumberClick("7") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "8", onClick = { onNumberClick("8") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "9", onClick = { onNumberClick("9") }, modifier = Modifier.weight(1f))
         }
-        Row(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            NumpadButton(text = "C", isClear = true, onClick = onClearClick, modifier = buttonModifier)
-            NumpadButton(text = "0", onClick = { onNumberClick("0") }, modifier = buttonModifier)
-            NumpadButton(text = "DEL", isDelete = true, onClick = onDeleteClick, modifier = buttonModifier)
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            NumpadButton(text = "C", isClear = true, onClick = onClearClick, modifier = Modifier.weight(1f))
+            NumpadButton(text = "0", onClick = { onNumberClick("0") }, modifier = Modifier.weight(1f))
+            NumpadButton(text = "DEL", isDelete = true, onClick = onDeleteClick, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -312,28 +489,51 @@ fun NumpadButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = modifier
-            .fillMaxHeight()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color.Transparent)
-            .clickable(onClick = onClick)
-    ) {
-        if (isDelete) {
+    if (isClear) {
+        Button(
+            onClick = onClick,
+            modifier = modifier.fillMaxHeight(),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = ErrorSubtle,
+                contentColor = ErrorRed
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp)
+        ) {
+            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold)
+        }
+    } else if (isDelete) {
+        Button(
+            onClick = onClick,
+            modifier = modifier.fillMaxHeight(),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = CardBackground,
+                contentColor = TextDark
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
+            border = BorderStroke(1.dp, BorderSubtle)
+        ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.Backspace,
                 contentDescription = "Delete",
-                tint = Color.White,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(26.dp),
+                tint = TextDark
             )
-        } else {
-            Text(
-                text = text,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Medium,
-                color = if (isClear) PinkAlert else Color.White
-            )
+        }
+    } else {
+        Button(
+            onClick = onClick,
+            modifier = modifier.fillMaxHeight(),
+            shape = RoundedCornerShape(16.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = CardBackground,
+                contentColor = TextDark
+            ),
+            elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
+            border = BorderStroke(1.dp, BorderSubtle)
+        ) {
+            Text(text = text, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
