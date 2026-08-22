@@ -11,6 +11,7 @@ The "Mobile Money Calculator" app is a financial utility tool designed specifica
 *   **State & Architecture:** MVVM (Model-View-ViewModel) + StateFlow
 *   **Serialization:** `kotlinx.serialization`
 *   **Approach:** 100% Offline-first (instant cold boot, zero data usage, embedded JSON repository)
+*   **Persistence:** `SharedPreferences` for remembering the selected country/provider across app launches
 *   **Target Device Profile:** Optimized for entry-level Android devices (1GB–3GB RAM, Android Go)
 *   **Compatibility:** `minSdk = 24` (Android 7.0+), covering >97% of active African smartphones
 

@@ -62,6 +62,7 @@ Designed specifically for optimal performance on entry-level Android devices (1G
 * **Language:** Kotlin
 * **UI Toolkit:** Jetpack Compose (Single-Activity Architecture)
 * **Architecture:** MVVM (Model-View-ViewModel) with Kotlin `StateFlow`
+* **Persistence:** `SharedPreferences` (remembers selected operator/country with zero latency)
 * **Serialization:** `kotlinx.serialization`
 * **Compatibility:** `minSdk = 24` (Android 7.0+), covering **>97%** of active smartphones in Africa.
 * **Future-Proof Universal Schema:** Tariff rules are completely decoupled from business logic and driven by JSON data, ready to scale to Uganda (MTN/Airtel), Tanzania, and Ghana.

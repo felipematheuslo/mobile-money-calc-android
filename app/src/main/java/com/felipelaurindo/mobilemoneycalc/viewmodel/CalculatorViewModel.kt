@@ -1,6 +1,9 @@
 package com.felipelaurindo.mobilemoneycalc.viewmodel
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.lifecycle.AndroidViewModel
 import com.felipelaurindo.mobilemoneycalc.model.MockData
 import com.felipelaurindo.mobilemoneycalc.model.ProviderConfig
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,11 +28,15 @@ data class CalculationResult(
     val errorMessage: String = ""
 )
 
-class CalculatorViewModel : ViewModel() {
+class CalculatorViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val prefs: SharedPreferences = application.getSharedPreferences("mobile_money_calc_prefs", Context.MODE_PRIVATE)
     val providers: List<ProviderConfig> = MockData.getProviders()
 
-    private val _selectedProvider = MutableStateFlow(providers.first())
+    private val savedProviderId = prefs.getString("selected_provider_id", "mpesa_ke")
+    private val initialProvider = providers.find { it.id == savedProviderId } ?: providers.first()
+
+    private val _selectedProvider = MutableStateFlow(initialProvider)
     val selectedProvider: StateFlow<ProviderConfig> = _selectedProvider.asStateFlow()
 
     private val _inputAmount = MutableStateFlow("0")
@@ -47,6 +54,7 @@ class CalculatorViewModel : ViewModel() {
 
     fun selectProvider(provider: ProviderConfig) {
         _selectedProvider.value = provider
+        prefs.edit().putString("selected_provider_id", provider.id).apply()
         // If the selected provider does not support Pochi and we are on Pochi mode, fallback to SEND_ONLY
         if (_calculationMode.value == CalculationMode.PAY_POCHI && provider.pochiTariffs == null) {
             _calculationMode.value = CalculationMode.SEND_ONLY
