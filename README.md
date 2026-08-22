@@ -1,6 +1,6 @@
-# 📱 Mobile Money Calculator (Kenya MVP)
+# 📱 Mobile Money Calculator (East Africa)
 
-A high-performance, **100% offline**, zero-friction financial utility app built for the African market (starting with Kenya's Safaricom M-Pesa). 
+A high-performance, **100% offline**, zero-friction financial utility app built for the African market (Kenya, Uganda, Tanzania). 
 
 The app eliminates arguments at payment counters and eliminates mental math errors by instantly calculating sending and withdrawal fees in real time.
 
@@ -13,12 +13,12 @@ The app eliminates arguments at payment counters and eliminates mental math erro
 * **The Math:** `Amount to Send + Transfer Fee = Total Deducted`.
 
 ### 2. 🤝 "Send for Cash" (Reverse Math) — Killer Feature
-* **The Situation:** A recipient needs an exact amount of cash in hand from an M-Pesa agent (e.g. 10,000 KES) and you agree to cover all fees.
-* **The Math:** Automatically calculates the agent withdrawal fee (`115 KES`), determines the required transfer (`10,115 KES`), computes the send fee for that subtotal (`100 KES`), and gives you the exact total deduction (`10,215 KES`).
+* **The Situation:** A recipient needs an exact amount of cash in hand from an M-Pesa/MoMo/Airtel agent (e.g. 10,000 KES / 100,000 UGX) and you agree to cover all fees.
+* **The Math:** Automatically calculates the agent withdrawal fee, computes government taxes where statutory (e.g. 0.5% in Uganda), determines the required transfer subtotal, calculates the send fee for that subtotal, and gives you the exact total deduction.
 
 ### 3. 💵 "Withdraw Only" (Agent Cash-Out)
-* **The Situation:** You are standing at an M-Pesa kiosk to withdraw cash from your own account and need to know the fee and total balance required.
-* **The Math:** `Cash to Withdraw + Agent Fee = Total from Balance`.
+* **The Situation:** You are standing at a mobile money kiosk to withdraw cash from your own account and need to know the agent fee, taxes, and total balance required.
+* **The Math:** `Cash to Withdraw + Agent Fee (+ Govt Tax) = Total from Balance`.
 
 ### 4. 🏪 "Pay Pochi" (Merchant Payments)
 * **The Situation:** Paying a street vendor or market merchant using Safaricom's Pochi La Biashara wallet.
@@ -37,11 +37,11 @@ The app eliminates arguments at payment counters and eliminates mental math erro
 
 The app's offline JSON repository is pre-loaded with official tariff structures for major East African networks:
 
-| Country | Operator | Currency | Features Supported | Official Reference |
+| Country | Operator | Currency | Features Supported | Official Reference & Rules |
 | :--- | :--- | :--- | :--- | :--- |
-| 🇰🇪 **Kenya** | **Safaricom M-Pesa** | `KES` | Send, Reverse Math, Agent Cash-Out, Pochi La Biashara | [Safaricom Tariffs](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits) |
-| 🇺🇬 **Uganda** | **MTN Mobile Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | [MTN Uganda Tariffs](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/) |
-| 🇺🇬 **Uganda** | **Airtel Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | Official Tiered Schedule |
+| 🇰🇪 **Kenya** | **Safaricom M-Pesa** | `KES` | Send, Reverse Math, Agent Cash-Out, Pochi La Biashara | [Safaricom Tariffs](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits) ([Rules](SAFARICOM_KENYA_RULES.md)) |
+| 🇺🇬 **Uganda** | **MTN Mobile Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | [MTN Uganda Tariffs](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/) ([Rules](MTN_UGANDA_RULES.md)) |
+| 🇺🇬 **Uganda** | **Airtel Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | [Airtel Uganda Tariffs](https://www.airtelmoney.ug/transaction_fees) ([Rules](AIRTEL_UGANDA_RULES.md)) |
 | 🇹🇿 **Tanzania** | **Vodacom M-Pesa** | `TZS` | Send, Reverse Math, Agent Cash-Out, High-volume bands | Official Tiered Schedule |
 
 ---

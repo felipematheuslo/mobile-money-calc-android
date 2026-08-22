@@ -142,7 +142,7 @@ data class TariffBand(
 
 *   **Multi-Country Plug & Play:** The app is pre-configured with embedded schemas for:
     *   🇰🇪 **Kenya:** Safaricom M-Pesa ([Official Source](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits)).
-    *   🇺🇬 **Uganda:** MTN Mobile Money ([Official Source](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/)) & Airtel Money (with 0.5% statutory government excise tax engine).
+    *   🇺🇬 **Uganda:** MTN Mobile Money ([Official Source](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/)) & Airtel Money ([Official Source](https://www.airtelmoney.ug/transaction_fees)) with 0.5% statutory government excise tax engine.
     *   🇹🇿 **Tanzania:** Vodacom M-Pesa (TZS currency formatting and high-volume transaction bands).
 *   **Dynamic UI Adaptability:** If a network provider does not feature a merchant wallet like Pochi, the UI dynamically collapses to the 3 standard options without empty space or error states.
 *   **Government Tax Calculation Engine:** Automatically checks `hasGovernmentTax` and applies percentage-based or flat-rate taxes above thresholds, displaying them transparently in the breakdown.
