@@ -63,7 +63,10 @@ fun getProviderAccentColor(providerId: String): Color = when (providerId) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
+fun CalculatorScreen(
+    viewModel: CalculatorViewModel = viewModel(),
+    modifier: Modifier = Modifier
+) {
     val uiState by viewModel.uiState.collectAsState()
     val inputAmount by viewModel.inputAmount.collectAsState()
     val calculationMode by viewModel.calculationMode.collectAsState()
@@ -75,18 +78,18 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
     val accentColor = getProviderAccentColor(selectedProvider.id)
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(LightBackground)
     ) {
         // Top Area (Dropdown, 4-Mode Selector, Input, Breakdown)
         Column(
             modifier = Modifier
-                .weight(1.4f)
+                .weight(1.85f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 6.dp),
+                .padding(horizontal = 16.dp, vertical = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(6.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             ProviderDropdown(
                 providers = providers,
@@ -107,11 +110,11 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
             // Main Input Display
             val amountValue = inputAmount.toDoubleOrNull() ?: 0.0
             val formattedInputText = "${formatCurrency(amountValue)} ${selectedProvider.currency}"
-            val displayFontSize = if (formattedInputText.length > 13) 26.sp else if (formattedInputText.length > 10) 30.sp else 34.sp
+            val displayFontSize = if (formattedInputText.length > 13) 24.sp else if (formattedInputText.length > 10) 28.sp else 32.sp
 
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(containerColor = CardBackground),
                 border = BorderStroke(1.dp, BorderSubtle),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -124,7 +127,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                        .padding(vertical = 4.dp, horizontal = 12.dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -136,19 +139,19 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = ErrorSubtle),
                     border = BorderStroke(1.dp, ErrorRed)
                 ) {
                     Text(
                         text = uiState.errorMessage,
-                        fontSize = 15.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = ErrorRed,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(12.dp)
+                            .padding(10.dp)
                     )
                 }
             } else {
@@ -156,7 +159,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .animateContentSize(),
-                    shape = RoundedCornerShape(14.dp),
+                    shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(containerColor = CardBackground),
                     border = BorderStroke(1.dp, BorderSubtle),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -164,7 +167,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 14.dp, vertical = 10.dp)
+                            .padding(horizontal = 14.dp, vertical = 6.dp)
                     ) {
                         when (uiState.mode) {
                             CalculationMode.SEND_ONLY -> {
@@ -173,7 +176,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                                     value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 BreakdownRow(
                                     label = "Transfer Fee",
                                     value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
@@ -186,27 +189,27 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                                     value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 BreakdownRow(
                                     label = "Withdrawal Fee to Cover",
                                     value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
                                 if (uiState.governmentTax > 0.0) {
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(2.dp))
                                     BreakdownRow(
                                         label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
                                         value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}",
                                         accentColor = accentColor
                                     )
                                 }
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 BreakdownRow(
                                     label = "Send Fee",
                                     value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 BreakdownRow(
                                     label = "You Must Transfer",
                                     value = "${formatCurrency(uiState.youMustSend)} ${selectedProvider.currency}",
@@ -220,14 +223,14 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                                     value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 BreakdownRow(
                                     label = "Agent Withdrawal Fee",
                                     value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
                                 if (uiState.governmentTax > 0.0) {
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(2.dp))
                                     BreakdownRow(
                                         label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
                                         value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}",
@@ -241,7 +244,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                                     value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+                                Spacer(modifier = Modifier.height(2.dp))
                                 BreakdownRow(
                                     label = "Pochi Merchant Fee",
                                     value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
@@ -250,9 +253,9 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                             }
                         }
 
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
                         HorizontalDivider(color = BorderSubtle, thickness = 1.dp)
-                        Spacer(modifier = Modifier.height(6.dp))
+                        Spacer(modifier = Modifier.height(4.dp))
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -261,7 +264,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                         ) {
                             Text(
                                 text = if (uiState.mode == CalculationMode.WITHDRAW_ONLY) "Total from Balance" else "Total Deducted",
-                                fontSize = 15.sp,
+                                fontSize = 14.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = TextDark
                             )
@@ -279,7 +282,7 @@ fun CalculatorScreen(viewModel: CalculatorViewModel = viewModel()) {
                                 label = "TotalAmountAnimation"
                             ) { targetTotal ->
                                 val formattedTotal = "${formatCurrency(targetTotal)} ${selectedProvider.currency}"
-                                val totalFontSize = if (formattedTotal.length > 13) 18.sp else if (formattedTotal.length > 10) 20.sp else 22.sp
+                                val totalFontSize = if (formattedTotal.length > 13) 17.sp else if (formattedTotal.length > 10) 19.sp else 21.sp
                                 Text(
                                     text = formattedTotal,
                                     fontSize = totalFontSize,
@@ -435,7 +438,7 @@ fun ModeButton(
                 contentColor = onBrandColor
             ),
             shape = RoundedCornerShape(10.dp),
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
             modifier = modifier
         ) {
@@ -454,7 +457,7 @@ fun ModeButton(
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(1.dp, BorderSubtle),
             colors = ButtonDefaults.outlinedButtonColors(containerColor = Color.White),
-            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 8.dp),
+            contentPadding = PaddingValues(horizontal = 6.dp, vertical = 6.dp),
             modifier = modifier
         ) {
             Text(
@@ -483,13 +486,13 @@ fun BreakdownRow(
     ) {
         Text(
             text = label,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             color = if (highlight) accentColor else TextGray,
             fontWeight = if (highlight) FontWeight.Bold else FontWeight.Normal
         )
         Text(
             text = value,
-            fontSize = 14.sp,
+            fontSize = 13.sp,
             fontWeight = if (highlight) FontWeight.ExtraBold else FontWeight.SemiBold,
             color = if (highlight) accentColor else TextDark
         )
@@ -506,29 +509,29 @@ fun CustomNumpad(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(bottom = 12.dp, start = 16.dp, end = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+            .padding(bottom = 6.dp, start = 16.dp, end = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
         val rowModifier = Modifier
             .weight(1f)
             .fillMaxWidth()
 
-        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             NumpadButton(text = "1", onClick = { onNumberClick("1") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "2", onClick = { onNumberClick("2") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "3", onClick = { onNumberClick("3") }, modifier = Modifier.weight(1f))
         }
-        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             NumpadButton(text = "4", onClick = { onNumberClick("4") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "5", onClick = { onNumberClick("5") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "6", onClick = { onNumberClick("6") }, modifier = Modifier.weight(1f))
         }
-        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             NumpadButton(text = "7", onClick = { onNumberClick("7") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "8", onClick = { onNumberClick("8") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "9", onClick = { onNumberClick("9") }, modifier = Modifier.weight(1f))
         }
-        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             NumpadButton(text = "C", isClear = true, onClick = onClearClick, modifier = Modifier.weight(1f))
             NumpadButton(text = "0", onClick = { onNumberClick("0") }, modifier = Modifier.weight(1f))
             NumpadButton(text = "DEL", isDelete = true, onClick = onDeleteClick, modifier = Modifier.weight(1f))
@@ -548,20 +551,20 @@ fun NumpadButton(
         Button(
             onClick = onClick,
             modifier = modifier.fillMaxHeight(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = ErrorSubtle,
                 contentColor = ErrorRed
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp)
         ) {
-            Text(text = text, fontSize = 26.sp, fontWeight = FontWeight.ExtraBold)
+            Text(text = text, fontSize = 22.sp, fontWeight = FontWeight.ExtraBold)
         }
     } else if (isDelete) {
         Button(
             onClick = onClick,
             modifier = modifier.fillMaxHeight(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = CardBackground,
                 contentColor = TextDark
@@ -572,7 +575,7 @@ fun NumpadButton(
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.Backspace,
                 contentDescription = "Delete",
-                modifier = Modifier.size(26.dp),
+                modifier = Modifier.size(22.dp),
                 tint = TextDark
             )
         }
@@ -580,7 +583,7 @@ fun NumpadButton(
         Button(
             onClick = onClick,
             modifier = modifier.fillMaxHeight(),
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = CardBackground,
                 contentColor = TextDark
@@ -588,7 +591,7 @@ fun NumpadButton(
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
             border = BorderStroke(1.dp, BorderSubtle)
         ) {
-            Text(text = text, fontSize = 28.sp, fontWeight = FontWeight.Bold)
+            Text(text = text, fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
