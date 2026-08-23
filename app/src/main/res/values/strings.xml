@@ -3,6 +3,8 @@
 
     <!-- Provider Header & Selection -->
     <string name="provider_select_desc">Select Provider</string>
+    <string name="provider_sheet_title">Select Operator &amp; Region</string>
+    <string name="provider_sheet_subtitle">Choose your mobile network provider</string>
     <string name="currency_format">Currency: %1$s</string>
     <string name="tariffs_last_updated">Tariffs updated: August 2026</string>
     <string name="tariffs_last_updated_short">Aug 2026</string>

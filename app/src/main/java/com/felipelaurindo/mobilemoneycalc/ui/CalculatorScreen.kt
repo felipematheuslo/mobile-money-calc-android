@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Backspace
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -162,6 +163,7 @@ fun CalculatorScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProviderHeaderCard(
     providers: List<ProviderConfig>,
@@ -169,185 +171,258 @@ fun ProviderHeaderCard(
     brandColor: Color,
     onProviderSelected: (ProviderConfig) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var showSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Surface(
-            onClick = { expanded = true },
-            shape = RoundedCornerShape(14.dp),
-            color = CardBackground,
-            border = BorderStroke(1.dp, CardBorder),
-            shadowElevation = 1.dp,
-            modifier = Modifier.fillMaxWidth()
+    Surface(
+        onClick = { showSheet = true },
+        shape = RoundedCornerShape(14.dp),
+        color = CardBackground,
+        border = BorderStroke(1.dp, CardBorder),
+        shadowElevation = 1.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 7.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 7.dp),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    // Operator Avatar/Flag with brand-tinted background
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = brandColor.copy(alpha = 0.14f),
-                        modifier = Modifier.size(34.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = getCountryFlag(selectedProvider.country),
-                                fontSize = 18.sp
-                            )
-                        }
-                    }
-                    Column {
-                        Text(
-                            text = "${selectedProvider.providerName} • ${selectedProvider.country}",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp,
-                            color = TextDark,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.currency_format, selectedProvider.currency),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextMuted
-                            )
-                            Text(
-                                text = "•",
-                                fontSize = 11.sp,
-                                color = TextMuted
-                            )
-                            Text(
-                                text = stringResource(R.string.tariffs_last_updated_short),
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = TextMuted
-                            )
-                        }
-                    }
-                }
-
-                // Sleek Chevron Dropdown Indicator Pill
+                // Operator Avatar/Flag with brand-tinted background
                 Surface(
                     shape = RoundedCornerShape(8.dp),
-                    color = ModeContainerBackground,
-                    modifier = Modifier.size(28.dp)
+                    color = brandColor.copy(alpha = 0.14f),
+                    modifier = Modifier.size(34.dp)
                 ) {
                     Box(contentAlignment = Alignment.Center) {
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = stringResource(R.string.provider_select_desc),
-                            tint = TextDark,
-                            modifier = Modifier.size(18.dp)
+                        Text(
+                            text = getCountryFlag(selectedProvider.country),
+                            fontSize = 18.sp
                         )
                     }
+                }
+                Column {
+                    Text(
+                        text = "${selectedProvider.providerName} • ${selectedProvider.country}",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = TextDark,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.currency_format, selectedProvider.currency),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = TextMuted
+                        )
+                        Text(
+                            text = "•",
+                            fontSize = 11.sp,
+                            color = TextMuted
+                        )
+                        Text(
+                            text = stringResource(R.string.tariffs_last_updated_short),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = TextMuted
+                        )
+                    }
+                }
+            }
+
+            // Sleek Chevron Dropdown Indicator Pill
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = ModeContainerBackground,
+                modifier = Modifier.size(28.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = stringResource(R.string.provider_select_desc),
+                        tint = TextDark,
+                        modifier = Modifier.size(18.dp)
+                    )
                 }
             }
         }
+    }
 
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .background(CardBackground)
-                .fillMaxWidth(0.9f)
+    if (showSheet) {
+        ModalBottomSheet(
+            onDismissRequest = { showSheet = false },
+            sheetState = sheetState,
+            containerColor = CardBackground,
+            dragHandle = { BottomSheetDefaults.DragHandle(color = BorderSubtle) },
+            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp),
+            scrimColor = Color.Black.copy(alpha = 0.6f)
         ) {
-            providers.forEach { provider ->
-                DropdownMenuItem(
-                    text = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(text = getCountryFlag(provider.country), fontSize = 18.sp)
-                            Column {
-                                Text(
-                                    text = "${provider.providerName} (${provider.country})",
-                                    fontWeight = if (provider.id == selectedProvider.id) FontWeight.Bold else FontWeight.Medium,
-                                    color = if (provider.id == selectedProvider.id) brandColor else TextDark,
-                                    fontSize = 13.sp
-                                )
-                                Text(
-                                    text = stringResource(R.string.currency_format, provider.currency),
-                                    fontSize = 11.sp,
-                                    color = TextMuted
-                                )
-                            }
-                        }
-                    },
-                    onClick = {
-                        onProviderSelected(provider)
-                        expanded = false
-                    }
-                )
-            }
-
-            HorizontalDivider(
-                color = CardBorder,
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
-            )
-
-            Surface(
-                color = ModeContainerBackground.copy(alpha = 0.55f),
-                shape = RoundedCornerShape(10.dp),
-                border = BorderStroke(1.dp, BorderSubtle.copy(alpha = 0.4f)),
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "🌍",
-                        fontSize = 18.sp
-                    )
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = stringResource(R.string.more_providers_coming_soon),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = TextDark
-                        )
-                        Text(
-                            text = stringResource(R.string.more_providers_coming_soon_subtitle),
-                            fontSize = 10.5.sp,
-                            color = TextMuted,
-                            lineHeight = 13.sp
-                        )
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
+                    .padding(horizontal = 18.dp)
+                    .padding(bottom = 20.dp)
+                    .navigationBarsPadding()
             ) {
                 Text(
-                    text = stringResource(R.string.tariffs_last_updated),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = TextMuted
+                    text = stringResource(R.string.provider_sheet_title),
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = TextDark,
+                    modifier = Modifier.padding(horizontal = 2.dp)
                 )
+                Text(
+                    text = stringResource(R.string.provider_sheet_subtitle),
+                    fontSize = 12.sp,
+                    color = TextMuted,
+                    modifier = Modifier.padding(start = 2.dp, end = 2.dp, top = 2.dp, bottom = 14.dp)
+                )
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    providers.forEach { provider ->
+                        val isSelected = provider.id == selectedProvider.id
+                        val itemBrandColor = getProviderBrandColor(provider.id)
+
+                        Surface(
+                            onClick = {
+                                onProviderSelected(provider)
+                                showSheet = false
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (isSelected) itemBrandColor.copy(alpha = 0.08f) else ModeContainerBackground.copy(alpha = 0.45f),
+                            border = BorderStroke(
+                                width = if (isSelected) 1.5.dp else 1.dp,
+                                color = if (isSelected) itemBrandColor else BorderSubtle.copy(alpha = 0.5f)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                ) {
+                                    Surface(
+                                        shape = RoundedCornerShape(8.dp),
+                                        color = itemBrandColor.copy(alpha = 0.16f),
+                                        modifier = Modifier.size(36.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Text(
+                                                text = getCountryFlag(provider.country),
+                                                fontSize = 20.sp
+                                            )
+                                        }
+                                    }
+
+                                    Column {
+                                        Text(
+                                            text = "${provider.providerName} (${provider.country})",
+                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.SemiBold,
+                                            color = if (isSelected) itemBrandColor else TextDark,
+                                            fontSize = 14.sp
+                                        )
+                                        Text(
+                                            text = stringResource(R.string.currency_format, provider.currency),
+                                            fontSize = 11.5.sp,
+                                            color = TextMuted
+                                        )
+                                    }
+                                }
+
+                                if (isSelected) {
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = itemBrandColor,
+                                        modifier = Modifier.size(22.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(
+                                                imageVector = Icons.Default.Check,
+                                                contentDescription = null,
+                                                tint = Color.White,
+                                                modifier = Modifier.size(15.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                HorizontalDivider(
+                    color = CardBorder,
+                    thickness = 1.dp,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+
+                // Coming soon banner
+                Surface(
+                    color = ModeContainerBackground.copy(alpha = 0.6f),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(1.dp, BorderSubtle.copy(alpha = 0.4f)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "🌍",
+                            fontSize = 20.sp
+                        )
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = stringResource(R.string.more_providers_coming_soon),
+                                fontSize = 12.5.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = TextDark
+                            )
+                            Text(
+                                text = stringResource(R.string.more_providers_coming_soon_subtitle),
+                                fontSize = 11.sp,
+                                color = TextMuted,
+                                lineHeight = 14.sp
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = stringResource(R.string.tariffs_last_updated),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextMuted
+                    )
+                }
             }
         }
     }
