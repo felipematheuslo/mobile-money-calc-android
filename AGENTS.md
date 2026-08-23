@@ -73,7 +73,6 @@ The UI is built with a banking-grade visual hierarchy optimized for fast, one-ha
     *   🇰🇪 **Safaricom M-Pesa:** Safaricom Green (`#00B365`) with white button text and green accents.
     *   🇺🇬 **MTN Mobile Money:** MTN Sunshine Yellow (`#FFCC00`) with high-contrast dark charcoal button text (`#191C1E`) and rich amber text highlights (`#C67D00`).
     *   🇺🇬 **Airtel Money:** Airtel Red (`#ED1C24`) with white button text.
-    *   🇹🇿 **Vodacom M-Pesa:** Vodacom Red (`#E60000`) with white button text.
     *   Background: Clean cool off-white (`#F7F9FA`)
     *   Text: Deep charcoal (`#191C1E`) for high outdoor sunlight readability
     *   Clear Button: Soft error pill (`#FFFFEBEE` / `#E53935`)
@@ -164,7 +163,6 @@ The repository includes a comprehensive JUnit test suite in `app/src/test/java/c
 *   **Safaricom Kenya:** Validates P2P tiered transfer fees, reverse math agent cash-out calculations across all tiers, agent cash withdrawals, and Pochi La Biashara flat 50 KES cap.
 *   **MTN Uganda:** Validates P2P transfers, statutory 0.5% government tax rounding, and high-value tiers up to 5,000,000 UGX.
 *   **Airtel Money Uganda:** Validates on-net vs off-net rates, agent cash-outs, 0.5% excise tax computation, and full reverse math flows.
-*   **Vodacom Tanzania:** Validates high-volume multi-million TZS transfer and withdrawal bands.
 *   **Edge Cases:** Verifies boundary conditions (minimum amount threshold, maximum transaction cap, zero/negative inputs, and exact tier border transitions).
 
 ## 7. Strategic Decisions & Product Roadmap
@@ -172,7 +170,7 @@ The repository includes a comprehensive JUnit test suite in `app/src/test/java/c
 *   **Multi-Country Plug & Play:** The app is pre-configured with embedded schemas for:
     *   🇰🇪 **Kenya:** Safaricom M-Pesa ([Official Source](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits) | [Rules](SAFARICOM_KENYA_RULES.md)).
     *   🇺🇬 **Uganda:** MTN Mobile Money ([Official Source](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/) | [Rules](MTN_UGANDA_RULES.md)) & Airtel Money ([Official Source](https://www.airtelmoney.ug/transaction_fees) | [Rules](AIRTEL_UGANDA_RULES.md)) with 0.5% statutory government excise tax engine.
-    *   🇹🇿 **Tanzania:** Vodacom M-Pesa (TZS currency formatting and high-volume transaction bands).
+    *   *Upcoming additions:* 🇹🇿 Tanzania (Vodacom M-Pesa), 🇬🇭 Ghana (MTN/Vodafone), 🇷🇼 Rwanda (MTN/Airtel).
 *   **Dynamic UI Adaptability:** If a network provider does not feature a merchant wallet like Pochi, the UI dynamically collapses to the 3 standard options without empty space or error states.
 *   **Government Tax Calculation Engine:** Automatically checks `hasGovernmentTax` and applies percentage-based or flat-rate taxes above thresholds, displaying them transparently in the breakdown.
 *   **ATM Withdrawal Tariffs:** Excluded by design to maintain zero-friction simplicity for the 99% peer-to-peer / kiosk cash withdrawal use case.

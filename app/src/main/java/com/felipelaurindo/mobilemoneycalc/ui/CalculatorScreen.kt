@@ -54,7 +54,6 @@ fun getCountryFlag(country: String): String = when (country.lowercase()) {
 fun getProviderBrandColor(providerId: String): Color = when (providerId) {
     "mtn_ug" -> Color(0xFFFFCC00) // MTN Sunshine Yellow
     "airtel_ug" -> Color(0xFFED1C24) // Airtel Red
-    "vodacom_tz" -> Color(0xFFE60000) // Vodacom Red
     else -> Color(0xFF00B365) // Safaricom Green
 }
 
@@ -66,7 +65,6 @@ fun getProviderOnBrandColor(providerId: String): Color = when (providerId) {
 fun getProviderAccentColor(providerId: String): Color = when (providerId) {
     "mtn_ug" -> Color(0xFFB45309) // Amber-700 for text on white background
     "airtel_ug" -> Color(0xFFED1C24)
-    "vodacom_tz" -> Color(0xFFE60000)
     else -> Color(0xFF00B365)
 }
 

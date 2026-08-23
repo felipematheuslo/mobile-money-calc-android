@@ -13,7 +13,6 @@ class TariffCalculationTest {
     private lateinit var mpesaKe: ProviderConfig
     private lateinit var mtnUg: ProviderConfig
     private lateinit var airtelUg: ProviderConfig
-    private lateinit var mpesaTz: ProviderConfig
 
     @Before
     fun setUp() {
@@ -21,7 +20,6 @@ class TariffCalculationTest {
         mpesaKe = providers.first { it.id == "mpesa_ke" }
         mtnUg = providers.first { it.id == "mtn_ug" }
         airtelUg = providers.first { it.id == "airtel_ug" }
-        mpesaTz = providers.first { it.id == "mpesa_tz" }
     }
 
     // =========================================================================
@@ -288,69 +286,7 @@ class TariffCalculationTest {
     }
 
     // =========================================================================
-    // 🇹🇿 4. VODACOM M-PESA (TANZANIA) — COMPLETE ON-NET & OFF-NET TESTS
-    // =========================================================================
-
-    @Test
-    fun testVodacomTanzaniaSchemaAndLimits() {
-        assertEquals("Tanzania", mpesaTz.country)
-        assertEquals("Vodacom M-Pesa", mpesaTz.providerName)
-        assertEquals("TZS", mpesaTz.currency)
-        assertFalse("Tanzania has no statutory government tax", mpesaTz.hasGovernmentTax)
-        assertEquals(100, mpesaTz.tariffs.minOf { it.min })
-        assertEquals(5000000, mpesaTz.tariffs.maxOf { it.max })
-        assertNull("Vodacom Tanzania does not have Pochi tariffs", mpesaTz.pochiTariffs)
-    }
-
-    @Test
-    fun testVodacomTanzaniaOnNetVsOffNetTransfers() {
-        // 1,000 TZS -> On-Net: 40 TZS | Off-Net: 200 TZS
-        val band1k = mpesaTz.tariffs.find { 1000 in it.min..it.max }!!
-        assertEquals(40.0, band1k.transferOnNet, 0.001)
-        assertEquals(200.0, band1k.transferOffNet, 0.001)
-
-        // 50,000 TZS -> On-Net: 850 TZS | Off-Net: 3,800 TZS
-        val band50k = mpesaTz.tariffs.find { 50000 in it.min..it.max }!!
-        assertEquals(850.0, band50k.transferOnNet, 0.001)
-        assertEquals(3800.0, band50k.transferOffNet, 0.001)
-
-        // 3,500,000 TZS -> On-Net: 4,000 TZS | Off-Net: 20,000 TZS
-        val band3_5m = mpesaTz.tariffs.find { 3500000 in it.min..it.max }!!
-        assertEquals(4000.0, band3_5m.transferOnNet, 0.001)
-        assertEquals(20000.0, band3_5m.transferOffNet, 0.001)
-    }
-
-    @Test
-    fun testVodacomTanzaniaWithdrawOnlyAgentCashOut() {
-        // 10,000 TZS -> Agent Fee: 1,800 TZS -> Total from balance: 11,800 TZS
-        val band10k = mpesaTz.tariffs.find { 10000 in it.min..it.max }!!
-        assertEquals(1800.0, band10k.withdrawalAgent ?: 0.0, 0.001)
-
-        // 1,000,000 TZS -> Agent Fee: 16,000 TZS -> Total from balance: 1,016,000 TZS
-        val band1m = mpesaTz.tariffs.find { 1000000 in it.min..it.max }!!
-        assertEquals(16000.0, band1m.withdrawalAgent ?: 0.0, 0.001)
-    }
-
-    @Test
-    fun testVodacomTanzaniaSendForCashReverseMath() {
-        // Recipient needs 20,000 TZS in cash
-        val netCash = 20000.0
-        val withdrawBand = mpesaTz.tariffs.find { netCash.toInt() in it.min..it.max }!!
-        val agentFee = withdrawBand.withdrawalAgent!! // 2,500 TZS
-        val subtotal = netCash + agentFee // 22,500 TZS
-
-        val sendBand = mpesaTz.tariffs.find { subtotal.toInt() in it.min..it.max }!!
-        val sendFee = sendBand.transferOnNet // 500 TZS (Band 20,000 - 39,999)
-        val totalDeducted = subtotal + sendFee // 23,000 TZS
-
-        assertEquals(2500.0, agentFee, 0.001)
-        assertEquals(22500.0, subtotal, 0.001)
-        assertEquals(500.0, sendFee, 0.001)
-        assertEquals(23000.0, totalDeducted, 0.001)
-    }
-
-    // =========================================================================
-    // 📊 5. CROSS-CARRIER COMPARATIVE & REGULATORY EDGE CASE TESTS
+    // 📊 4. CROSS-CARRIER COMPARATIVE & REGULATORY EDGE CASE TESTS
     // =========================================================================
 
     @Test
@@ -374,7 +310,7 @@ class TariffCalculationTest {
 
     @Test
     fun testAllProvidersHaveCompleteAndNonEmptyTariffs() {
-        assertEquals("Total registered providers count", 4, providers.size)
+        assertEquals("Total registered providers count", 3, providers.size)
         for (provider in providers) {
             assertTrue("Provider ${provider.providerName} must have tariffs", provider.tariffs.isNotEmpty())
             assertTrue("Provider ${provider.currency} currency must not be blank", provider.currency.isNotBlank())

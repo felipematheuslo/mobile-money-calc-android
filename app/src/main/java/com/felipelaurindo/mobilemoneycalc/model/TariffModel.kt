@@ -119,32 +119,6 @@ object MockData {
             { "min": 4000001, "max": 5000000, "transfer_on_net": 2000.0, "transfer_off_net": 2000.0, "withdrawal_agent": 18000.0 }
           ],
           "pochi_tariffs": null
-        },
-        {
-          "id": "mpesa_tz",
-          "country": "Tanzania",
-          "provider_name": "Vodacom M-Pesa",
-          "currency": "TZS",
-          "has_government_tax": false,
-          "tax_percentage": 0.0,
-          "tax_free_threshold": 0.0,
-          "tariffs": [
-            { "min": 100, "max": 999, "transfer_on_net": 20.0, "transfer_off_net": 100.0, "withdrawal_agent": 250.0 },
-            { "min": 1000, "max": 1999, "transfer_on_net": 40.0, "transfer_off_net": 200.0, "withdrawal_agent": 400.0 },
-            { "min": 2000, "max": 4999, "transfer_on_net": 85.0, "transfer_off_net": 450.0, "withdrawal_agent": 750.0 },
-            { "min": 5000, "max": 9999, "transfer_on_net": 150.0, "transfer_off_net": 800.0, "withdrawal_agent": 1200.0 },
-            { "min": 10000, "max": 19999, "transfer_on_net": 300.0, "transfer_off_net": 1400.0, "withdrawal_agent": 1800.0 },
-            { "min": 20000, "max": 39999, "transfer_on_net": 500.0, "transfer_off_net": 2200.0, "withdrawal_agent": 2500.0 },
-            { "min": 40000, "max": 49999, "transfer_on_net": 650.0, "transfer_off_net": 2800.0, "withdrawal_agent": 3200.0 },
-            { "min": 50000, "max": 99999, "transfer_on_net": 850.0, "transfer_off_net": 3800.0, "withdrawal_agent": 4500.0 },
-            { "min": 100000, "max": 199999, "transfer_on_net": 1200.0, "transfer_off_net": 5500.0, "withdrawal_agent": 6000.0 },
-            { "min": 200000, "max": 299999, "transfer_on_net": 1500.0, "transfer_off_net": 7000.0, "withdrawal_agent": 7500.0 },
-            { "min": 300000, "max": 499999, "transfer_on_net": 1800.0, "transfer_off_net": 8500.0, "withdrawal_agent": 9000.0 },
-            { "min": 500000, "max": 999999, "transfer_on_net": 2200.0, "transfer_off_net": 11000.0, "withdrawal_agent": 12000.0 },
-            { "min": 1000000, "max": 3000000, "transfer_on_net": 3000.0, "transfer_off_net": 15000.0, "withdrawal_agent": 16000.0 },
-            { "min": 3000001, "max": 5000000, "transfer_on_net": 4000.0, "transfer_off_net": 20000.0, "withdrawal_agent": 20000.0 }
-          ],
-          "pochi_tariffs": null
         }
     ]
     """

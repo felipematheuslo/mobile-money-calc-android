@@ -1,6 +1,6 @@
 # 📱 Mobile Money Calculator (East Africa)
 
-A high-performance, **100% offline**, zero-friction financial utility app built for the African market (Kenya, Uganda, Tanzania). 
+A high-performance, **100% offline**, zero-friction financial utility app built for the African market (Kenya, Uganda, and expanding soon). 
 
 The app eliminates arguments at payment counters and eliminates mental math errors by instantly calculating sending and withdrawal fees in real time.
 
@@ -39,14 +39,15 @@ The app eliminates arguments at payment counters and eliminates mental math erro
 
 ## 🌍 Supported Countries & Operators (Plug & Play)
 
-The app's offline JSON repository is pre-loaded with official tariff structures for major East African networks (verified & updated: **August 2026**):
+The app's offline JSON repository is pre-loaded with official tariff structures for major networks (verified & updated: **August 2026**):
 
 | Country | Operator | Currency | Features Supported | Official Reference & Rules |
 | :--- | :--- | :--- | :--- | :--- |
 | 🇰🇪 **Kenya** | **Safaricom M-Pesa** | `KES` | Send, Reverse Math, Agent Cash-Out, Pochi La Biashara | [Safaricom Tariffs](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits) ([Rules Guide](SAFARICOM_KENYA_RULES.md)) |
 | 🇺🇬 **Uganda** | **MTN Mobile Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | [MTN Uganda Tariffs](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/) ([Rules Guide](MTN_UGANDA_RULES.md)) |
 | 🇺🇬 **Uganda** | **Airtel Money** | `UGX` | Send, Reverse Math, Agent Cash-Out, 0.5% Statutory Govt Tax | [Airtel Uganda Tariffs](https://www.airtelmoney.ug/transaction_fees) ([Rules Guide](AIRTEL_UGANDA_RULES.md)) |
-| 🇹🇿 **Tanzania** | **Vodacom M-Pesa** | `TZS` | Send, Reverse Math, Agent Cash-Out, High-volume bands | Official Tiered Schedule |
+
+*More African networks (Tanzania, Ghana, Rwanda) are coming soon.*
 
 ---
 
@@ -58,7 +59,7 @@ Designed specifically for optimal performance on entry-level Android devices (1G
 * **Modal Bottom Sheet Provider Selector:** Features operator brand avatars, dedicated carrier tiles with selection checkmarks, an expanding *"More operators and countries coming soon"* banner, and a verified tariff timestamp footer (*"Tariffs updated: August 2026"*).
 * **Single-Row Mode Selector (`ModeSingleRowSelector`):** Fluid horizontal single-row mode switcher with dynamic carrier color accents.
 * **Smart Receipt Card (`SmartReceiptCard`):** Neutral slate digital receipt (`#1E293B` / `#0F172A`) with real-time scenario explanations, animated breakdown items, and a fixed anchored grand total box with zero mode-switch jumpiness.
-* **Dynamic Multi-Carrier Brand Theming:** Automatically adapts primary colors and UI accents to the active provider (🟢 Safaricom Green, 🟡 MTN Sunshine Yellow with high-contrast text, 🔴 Airtel Red, 🔴 Vodacom Red).
+* **Dynamic Multi-Carrier Brand Theming:** Automatically adapts primary colors and UI accents to the active provider (🟢 Safaricom Green, 🟡 MTN Sunshine Yellow with high-contrast text, 🔴 Airtel Red).
 * **AdMob Monetization (`BannerAd`):** Dedicated banner space positioned between the receipt card and numpad with fixed dimensions to eliminate Cumulative Layout Shift (CLS).
 * **Adaptive 5-Row Layout Engine:** Smoothly accommodates up to 5 breakdown rows (including statutory government taxes) without vertical clipping or overlap.
 * **Extreme Sunlight Readability:** High-contrast typography with deep charcoal (`#191C1E`) and crisp labels.
