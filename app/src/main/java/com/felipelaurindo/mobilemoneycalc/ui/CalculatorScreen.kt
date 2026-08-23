@@ -215,28 +215,12 @@ fun ProviderHeaderCard(
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.currency_format, selectedProvider.currency),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextMuted
-                        )
-                        Text(
-                            text = "•",
-                            fontSize = 11.sp,
-                            color = TextMuted
-                        )
-                        Text(
-                            text = stringResource(R.string.tariffs_last_updated_short),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextMuted
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.currency_format, selectedProvider.currency),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextMuted
+                    )
                 }
             }
 
