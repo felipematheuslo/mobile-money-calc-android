@@ -4,16 +4,18 @@
 The "Mobile Money Calculator" app is a financial utility tool designed specifically for the African market (starting with Kenya). The main objective is to provide 100% offline transparency and accuracy in calculating transaction and withdrawal fees for Mobile Money platforms (primarily Safaricom M-Pesa).
 
 **Key Differentiator:** "Reverse Math" — allowing the user to enter the exact net amount the recipient needs in cash, while the app automatically computes the gross amount to send, fully covering all sending and agent withdrawal fees.
-
 ## 2. Technologies and Architecture
 *   **Language:** Kotlin
 *   **UI Framework:** Jetpack Compose (Single-Activity Architecture)
 *   **State & Architecture:** MVVM (Model-View-ViewModel) + StateFlow
+*   **Monetization & Ads:** Google Mobile Ads SDK (AdMob) with dedicated zero-CLS reserved layout space
+*   **Internationalization (i18n):** 100% extracted UI strings in `strings.xml` for effortless multi-language localization
 *   **Serialization:** `kotlinx.serialization`
 *   **Approach:** 100% Offline-first (instant cold boot, zero data usage, embedded JSON repository)
 *   **Persistence:** `SharedPreferences` for remembering the selected country/provider across app launches
 *   **Target Device Profile:** Optimized for entry-level Android devices (1GB–3GB RAM, Android Go)
 *   **Compatibility:** `minSdk = 24` (Android 7.0+), covering >97% of active African smartphones
+*   **Testing:** Comprehensive JUnit 4 test suite (`TariffCalculationTest`) covering all calculation intents, tax thresholds, and provider boundaries.
 
 ## 3. Core Features & The 4 Calculation Intents
 
@@ -21,35 +23,52 @@ The app covers all 4 fundamental real-world Mobile Money consumer flows:
 
 ### Intent 1: "Send Only" (Wallet to Wallet)
 *   **Use Case:** Transferring funds directly to another person's digital wallet (e.g., paying a friend, splitting a bill, or sending funds they will spend digitally).
+*   **Scenario Explanation:** *"Sender pays the transfer fee; recipient receives the net amount in their digital wallet."*
 *   **Outputs:** Amount to Send + Transfer Fee $\rightarrow$ **Total Deducted**.
 
 ### Intent 2: "Send for Cash" (Reverse Math / Cash-Out)
-*   **Use Case:** The recipient needs physical cash in hand from an M-Pesa agent and the sender agrees to cover all intermediate fees.
+*   **Use Case:** The recipient needs physical cash in hand from an M-Pesa/MoMo/Airtel agent and the sender agrees to cover all intermediate fees.
+*   **Scenario Explanation:** *"Sender covers both transfer fee & agent cash-out fee so recipient receives full cash in hand."*
 *   **Computation:**
     1. Lookup agent `withdrawalFee` for `netAmount`.
-    2. Compute `subtotal = netAmount + withdrawalFee`.
-    3. Lookup transfer `sendFee` for `subtotal`.
-    4. Compute `totalDeducted = subtotal + sendFee`.
-*   **Outputs:** Net Cash Needed + Withdrawal Fee to Cover + Send Fee + **You Must Transfer** (`subtotal`) $\rightarrow$ **Total Deducted**.
+    2. Compute statutory government tax if applicable (`netAmount * taxPercentage`).
+    3. Compute `subtotal = netAmount + withdrawalFee + taxAmount`.
+    4. Lookup transfer `sendFee` for `subtotal`.
+    5. Compute `totalDeducted = subtotal + sendFee`.
+*   **Outputs:** Net Cash Needed + Withdrawal Fee to Cover + Govt Tax (if statutory) + Send Fee + **You Must Transfer** (`subtotal`) $\rightarrow$ **Total Deducted**.
 
 ### Intent 3: "Withdraw Only" (Agent Cash-Out)
 *   **Use Case:** The user is standing at an agent kiosk withdrawing cash from their own account and wants to know the agent fee and final balance deduction.
-*   **Outputs:** Cash to Withdraw + Agent Withdrawal Fee $\rightarrow$ **Total from Balance**.
+*   **Scenario Explanation:** *"Agent cash-out fee and taxes are deducted directly from your mobile wallet balance."*
+*   **Outputs:** Cash to Withdraw + Agent Withdrawal Fee (+ Govt Tax) $\rightarrow$ **Total from Balance**.
 
 ### Intent 4: "Pay Pochi" (Pochi La Biashara Merchant Payments)
 *   **Use Case:** Paying an informal merchant or street vendor via Safaricom's discounted Pochi wallet.
+*   **Scenario Explanation:** *"Discounted merchant transfer rates capped at a flat 50 KES fee (no withdrawal fee)."*
 *   **Outputs:** Payment Amount + Discounted Merchant Fee (capped at 50 KES) $\rightarrow$ **Total Deducted**.
 
 ### Reactive Limit Protection
 The app continuously monitors regulatory and provider transaction bounds:
-* **Maximum Transaction Limit:** If the entered amount exceeds the provider's max transaction cap (e.g., `250,000 KES` for Safaricom or `5,000,000 UGX` for MTN), numeric outputs are hidden and replaced with an instant warning: *"Maximum transaction limit is [Cap] [Currency]"*.
+* **Maximum Transaction Limit:** If the entered amount exceeds the provider's max transaction cap (e.g., `250,000 KES` for Safaricom or `5,000,000 UGX` for MTN/Airtel), numeric outputs are hidden and replaced with an instant warning: *"Maximum transaction limit is [Cap] [Currency]"*.
 * **Minimum Limit Protection:** If an amount is below the provider's minimum allowed transfer or agent withdrawal threshold (e.g., `500 UGX` in Uganda or `50 KES` for Kenyan cash-outs), a clear warning is displayed: *"Minimum withdrawal amount is [Min] [Currency]"* or *"Minimum transaction amount is [Min] [Currency]"*.
 
-## 4. User Interface & Dynamic Operator Theming ("Lightweight Premium")
+## 4. User Interface, Monetization & Dynamic Operator Theming ("Lightweight Premium")
 
-The UI is optimized for fast, one-handed operation in high-paced commercial environments (kiosks, markets, street vendors):
+The UI is built with a banking-grade visual hierarchy optimized for fast, one-handed operation in high-paced commercial environments (kiosks, markets, street vendors):
 
-*   **Custom Full-Screen Numpad:** Standard Android OS keyboard is strictly disabled. Large squarcle keys (`RoundedCornerShape(16.dp)`) take up the bottom ~45% of the screen for instant thumb reach.
+*   **Provider Header Card (`ProviderHeaderCard`):** Modern top header displaying the active carrier brand badge, operator name, country flag, tariff freshness date (`Currency: %s • Aug 2026`), and instant selector modal/dropdown.
+    *   **Dropdown Provider Selector:** Features individual carrier items with brand styling, an expanding *"More operators & countries coming soon"* informational card at the bottom of the list, and a verified tariff timestamp footer (*"Tariffs updated: August 2026"*).
+*   **Single-Row Mode Selector (`ModeSingleRowSelector`):** Streamlined horizontal single-row mode switcher with smooth sliding pill indicators and dynamic carrier color accents.
+*   **Smart Receipt Card (`SmartReceiptCard`):**
+    *   Sleek dark slate aesthetic (`#1E293B` / `#0F172A`) with high outdoor sunlight contrast.
+    *   Distinct formatted input display section with real-time scenario subtitle explanations.
+    *   Animated line item breakdown with tabular typography.
+    *   Fixed anchored grand total deduction box with high-contrast text and zero mode-switch jumpiness.
+*   **Integrated AdMob Banner (`BannerAd`):**
+    *   Placed between the receipt card and numpad with dedicated breathing room and fixed height (`50.dp` / standard banner).
+    *   Prevents Cumulative Layout Shift (CLS) during ad loads.
+    *   Graceful placeholder support during design previews and network latency.
+*   **Custom Full-Screen Numpad:** Standard Android OS keyboard is strictly disabled. Large squarcle keys (`RoundedCornerShape(16.dp)`) take up the bottom ~40% of the screen for instant thumb reach. Zero taps to open/close keyboard.
 *   **Dynamic Multi-Carrier Brand Theming:**
     *   🇰🇪 **Safaricom M-Pesa:** Safaricom Green (`#00B365`) with white button text and green accents.
     *   🇺🇬 **MTN Mobile Money:** MTN Sunshine Yellow (`#FFCC00`) with high-contrast dark charcoal button text (`#191C1E`) and rich amber text highlights (`#C67D00`).
@@ -58,7 +77,8 @@ The UI is optimized for fast, one-handed operation in high-paced commercial envi
     *   Background: Clean cool off-white (`#F7F9FA`)
     *   Text: Deep charcoal (`#191C1E`) for high outdoor sunlight readability
     *   Clear Button: Soft error pill (`#FFFFEBEE` / `#E53935`)
-*   **Adaptive 5-Row Layout Engine:** Dynamically renders between 2 to 5 breakdown rows (accommodating statutory government taxes, agent fees, transfer subtotals, and final totals) without vertical clipping or overlap.
+*   **Adaptive 5-Row Layout Engine:** Dynamically renders between 2 to 5 breakdown rows (accommodating statutory government taxes, agent fees, transfer subtotals, and final totals) without vertical clipping or layout shifts.
+*   **Edge-to-Edge & System Navigation Bar Insets:** Complete support for Android edge-to-edge window insets, fixing 3-button system navigation bar contrast and gesture pill padding.
 *   **Hardware-Accelerated Micro-Animations:**
     *   `AnimatedContent` for smooth sliding transitions on total figures.
     *   `animateContentSize` on breakdown cards when toggling between modes.
@@ -138,13 +158,34 @@ data class TariffBand(
 }
 ```
 
-## 6. Strategic Decisions & Product Roadmap
+## 6. Automated Testing Suite
+
+The repository includes a comprehensive JUnit test suite in `app/src/test/java/com/felipelaurindo/mobilemoneycalc/TariffCalculationTest.kt`:
+*   **Safaricom Kenya:** Validates P2P tiered transfer fees, reverse math agent cash-out calculations across all tiers, agent cash withdrawals, and Pochi La Biashara flat 50 KES cap.
+*   **MTN Uganda:** Validates P2P transfers, statutory 0.5% government tax rounding, and high-value tiers up to 5,000,000 UGX.
+*   **Airtel Money Uganda:** Validates on-net vs off-net rates, agent cash-outs, 0.5% excise tax computation, and full reverse math flows.
+*   **Vodacom Tanzania:** Validates high-volume multi-million TZS transfer and withdrawal bands.
+*   **Edge Cases:** Verifies boundary conditions (minimum amount threshold, maximum transaction cap, zero/negative inputs, and exact tier border transitions).
+
+## 7. Strategic Decisions & Product Roadmap
 
 *   **Multi-Country Plug & Play:** The app is pre-configured with embedded schemas for:
-    *   🇰🇪 **Kenya:** Safaricom M-Pesa ([Official Source](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits)).
-    *   🇺🇬 **Uganda:** MTN Mobile Money ([Official Source](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/)) & Airtel Money ([Official Source](https://www.airtelmoney.ug/transaction_fees)) with 0.5% statutory government excise tax engine.
+    *   🇰🇪 **Kenya:** Safaricom M-Pesa ([Official Source](https://www.safaricom.co.ke/main-mpesa/m-pesa-for-you/tariffs-limits/consumer-tariffs-limits) | [Rules](SAFARICOM_KENYA_RULES.md)).
+    *   🇺🇬 **Uganda:** MTN Mobile Money ([Official Source](https://www.mtn.co.ug/tariffs/mobile-money-tariffs/) | [Rules](MTN_UGANDA_RULES.md)) & Airtel Money ([Official Source](https://www.airtelmoney.ug/transaction_fees) | [Rules](AIRTEL_UGANDA_RULES.md)) with 0.5% statutory government excise tax engine.
     *   🇹🇿 **Tanzania:** Vodacom M-Pesa (TZS currency formatting and high-volume transaction bands).
 *   **Dynamic UI Adaptability:** If a network provider does not feature a merchant wallet like Pochi, the UI dynamically collapses to the 3 standard options without empty space or error states.
 *   **Government Tax Calculation Engine:** Automatically checks `hasGovernmentTax` and applies percentage-based or flat-rate taxes above thresholds, displaying them transparently in the breakdown.
 *   **ATM Withdrawal Tariffs:** Excluded by design to maintain zero-friction simplicity for the 99% peer-to-peer / kiosk cash withdrawal use case.
 *   **Zero-Internet Guarantee:** All computations happen locally with zero latency, zero tracking overhead, and zero dependence on cellular data connectivity.
+
+## 8. Mandatory Agent Rules & Tariff Maintenance
+
+> [!IMPORTANT]
+> ### 🚨 TARIFF UPDATE PROTOCOL FOR AI AGENTS
+> Whenever modifying, adding, or auditing tariff bands, provider schemas, or tax rules in `MockData` / `tariffs.json`:
+> 1. **Update Tariff Freshness Strings:** AI agents **MUST ALWAYS** update the tariff update date strings in `app/src/main/res/values/strings.xml`:
+>    - `tariffs_last_updated` (e.g. `Tariffs updated: August 2026`)
+>    - `tariffs_last_updated_short` (e.g. `Aug 2026`)
+> 2. **Maintain 100% i18n:** Never hardcode user-visible text in Kotlin composables. Always declare and reference keys in `strings.xml`.
+> 3. **Run Automated Test Suite:** Execute `./gradlew testDebugUnitTest` immediately to verify that no reverse math calculations or threshold limits have regressed.
+

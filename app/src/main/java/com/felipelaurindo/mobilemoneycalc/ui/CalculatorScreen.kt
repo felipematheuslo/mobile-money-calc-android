@@ -213,12 +213,28 @@ fun ProviderHeaderCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        Text(
-                            text = stringResource(R.string.currency_format, selectedProvider.currency),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = TextMuted
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.currency_format, selectedProvider.currency),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = TextMuted
+                            )
+                            Text(
+                                text = "•",
+                                fontSize = 11.sp,
+                                color = TextMuted
+                            )
+                            Text(
+                                text = stringResource(R.string.tariffs_last_updated_short),
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = TextMuted
+                            )
+                        }
                     }
                 }
 
@@ -274,6 +290,63 @@ fun ProviderHeaderCard(
                         onProviderSelected(provider)
                         expanded = false
                     }
+                )
+            }
+
+            HorizontalDivider(
+                color = CardBorder,
+                thickness = 1.dp,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp)
+            )
+
+            Surface(
+                color = ModeContainerBackground.copy(alpha = 0.55f),
+                shape = RoundedCornerShape(10.dp),
+                border = BorderStroke(1.dp, BorderSubtle.copy(alpha = 0.4f)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "🌍",
+                        fontSize = 18.sp
+                    )
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.more_providers_coming_soon),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = TextDark
+                        )
+                        Text(
+                            text = stringResource(R.string.more_providers_coming_soon_subtitle),
+                            fontSize = 10.5.sp,
+                            color = TextMuted,
+                            lineHeight = 13.sp
+                        )
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.tariffs_last_updated),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = TextMuted
                 )
             }
         }
