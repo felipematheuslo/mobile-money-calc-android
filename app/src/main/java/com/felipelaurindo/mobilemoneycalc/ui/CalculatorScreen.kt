@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.felipelaurindo.mobilemoneycalc.BuildConfig
 import com.felipelaurindo.mobilemoneycalc.R
 import com.felipelaurindo.mobilemoneycalc.model.ProviderConfig
 import com.felipelaurindo.mobilemoneycalc.ui.components.BannerAd
@@ -393,16 +394,22 @@ fun ProviderHeaderCard(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row(
+                Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.tariffs_last_updated),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Medium,
                         color = TextMuted
+                    )
+                    Text(
+                        text = stringResource(R.string.app_version_format, BuildConfig.VERSION_NAME),
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Normal,
+                        color = TextMuted.copy(alpha = 0.7f)
                     )
                 }
             }
