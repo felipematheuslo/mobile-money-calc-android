@@ -55,7 +55,7 @@ The app's offline JSON repository is pre-loaded with official tariff structures 
 Designed specifically for optimal performance on entry-level Android devices (1GB–3GB RAM, Android Go) prevalent in the African market:
 
 * **Banking-Grade Header Card (`ProviderHeaderCard`):** Displays operator brand badge, provider name, country flag, currency (`Currency: %s`), and instant modal bottom sheet selector.
-* **Modal Bottom Sheet Provider Selector:** Features operator brand avatars, dedicated carrier tiles with selection checkmarks, an expanding *"More operators & countries coming soon"* banner, and a verified tariff timestamp footer (*"Tariffs updated: August 2026"*).
+* **Modal Bottom Sheet Provider Selector:** Features operator brand avatars, dedicated carrier tiles with selection checkmarks, an expanding *"More operators and countries coming soon"* banner, and a verified tariff timestamp footer (*"Tariffs updated: August 2026"*).
 * **Single-Row Mode Selector (`ModeSingleRowSelector`):** Fluid horizontal single-row mode switcher with dynamic carrier color accents.
 * **Smart Receipt Card (`SmartReceiptCard`):** Neutral slate digital receipt (`#1E293B` / `#0F172A`) with real-time scenario explanations, animated breakdown items, and a fixed anchored grand total box with zero mode-switch jumpiness.
 * **Dynamic Multi-Carrier Brand Theming:** Automatically adapts primary colors and UI accents to the active provider (🟢 Safaricom Green, 🟡 MTN Sunshine Yellow with high-contrast text, 🔴 Airtel Red, 🔴 Vodacom Red).

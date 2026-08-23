@@ -57,7 +57,7 @@ The app continuously monitors regulatory and provider transaction bounds:
 The UI is built with a banking-grade visual hierarchy optimized for fast, one-handed operation in high-paced commercial environments (kiosks, markets, street vendors):
 
 *   **Provider Header Card (`ProviderHeaderCard`):** Modern top header displaying the active carrier brand badge, operator name, country flag, currency (`Currency: %s`), and instant modal bottom sheet selector.
-    *   **Modal Bottom Sheet Provider Selector:** Features dedicated carrier cards with brand styling, checkmark selection indicators, an expanding *"More operators & countries coming soon"* informational card, and a verified tariff timestamp footer (*"Tariffs updated: August 2026"*).
+    *   **Modal Bottom Sheet Provider Selector:** Features dedicated carrier cards with brand styling, checkmark selection indicators, an expanding *"More operators and countries coming soon"* informational card, and a verified tariff timestamp footer (*"Tariffs updated: August 2026"*).
 *   **Single-Row Mode Selector (`ModeSingleRowSelector`):** Streamlined horizontal single-row mode switcher with smooth sliding pill indicators and dynamic carrier color accents.
 *   **Smart Receipt Card (`SmartReceiptCard`):**
     *   Sleek dark slate aesthetic (`#1E293B` / `#0F172A`) with high outdoor sunlight contrast.
