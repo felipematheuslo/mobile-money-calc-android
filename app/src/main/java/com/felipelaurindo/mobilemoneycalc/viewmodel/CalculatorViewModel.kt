@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
+import com.felipelaurindo.mobilemoneycalc.R
 import com.felipelaurindo.mobilemoneycalc.model.MockData
 import com.felipelaurindo.mobilemoneycalc.model.ProviderConfig
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -126,7 +127,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         if (amount > maxLimit) {
             _uiState.value = CalculationResult(
                 mode = mode,
-                errorMessage = "Maximum transaction limit is ${formatCurrency(maxLimit)} ${config.currency}"
+                errorMessage = getApplication<Application>().getString(R.string.error_max_limit, formatCurrency(maxLimit), config.currency)
             )
             return
         }
@@ -134,7 +135,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
         if (amount < minLimit) {
             _uiState.value = CalculationResult(
                 mode = mode,
-                errorMessage = "Minimum transaction amount is ${formatCurrency(minLimit)} ${config.currency}"
+                errorMessage = getApplication<Application>().getString(R.string.error_min_limit, formatCurrency(minLimit), config.currency)
             )
             return
         }
@@ -146,7 +147,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (band == null) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "Minimum transaction amount is ${formatCurrency(minLimit)} ${config.currency}"
+                        errorMessage = getApplication<Application>().getString(R.string.error_min_limit, formatCurrency(minLimit), config.currency)
                     )
                     return
                 }
@@ -167,7 +168,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (amount < minWithdrawal) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                        errorMessage = getApplication<Application>().getString(R.string.error_min_withdrawal, formatCurrency(minWithdrawal), config.currency)
                     )
                     return
                 }
@@ -176,7 +177,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (withdrawBand == null || withdrawBand.withdrawalAgent == null) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                        errorMessage = getApplication<Application>().getString(R.string.error_min_withdrawal, formatCurrency(minWithdrawal), config.currency)
                     )
                     return
                 }
@@ -188,7 +189,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (sendBand == null) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "The required transfer (${formatCurrency(subtotal)} ${config.currency}) exceeds the maximum limit."
+                        errorMessage = getApplication<Application>().getString(R.string.error_transfer_exceeds_max, formatCurrency(subtotal), config.currency)
                     )
                     return
                 }
@@ -212,7 +213,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (amount < minWithdrawal) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                        errorMessage = getApplication<Application>().getString(R.string.error_min_withdrawal, formatCurrency(minWithdrawal), config.currency)
                     )
                     return
                 }
@@ -221,7 +222,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (band == null || band.withdrawalAgent == null) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "Minimum withdrawal amount is ${formatCurrency(minWithdrawal)} ${config.currency}"
+                        errorMessage = getApplication<Application>().getString(R.string.error_min_withdrawal, formatCurrency(minWithdrawal), config.currency)
                     )
                     return
                 }
@@ -243,7 +244,7 @@ class CalculatorViewModel(application: Application) : AndroidViewModel(applicati
                 if (band == null) {
                     _uiState.value = CalculationResult(
                         mode = mode,
-                        errorMessage = "Minimum transaction amount is ${formatCurrency(minLimit)} ${config.currency}"
+                        errorMessage = getApplication<Application>().getString(R.string.error_min_limit, formatCurrency(minLimit), config.currency)
                     )
                     return
                 }

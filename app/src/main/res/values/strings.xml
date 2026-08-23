@@ -1,3 +1,58 @@
 <resources>
     <string name="app_name">MomoCalc: Mobile Money Fees</string>
+
+    <!-- Provider Header & Selection -->
+    <string name="provider_select_desc">Select Provider</string>
+    <string name="currency_format">Currency: %1$s</string>
+
+    <!-- Mode Selector Tabs -->
+    <string name="mode_send">Send</string>
+    <string name="mode_for_cash">For Cash</string>
+    <string name="mode_withdraw">Withdraw</string>
+    <string name="mode_pochi">Pochi</string>
+
+    <!-- Conversational Scenario Questions (Card Header) -->
+    <string name="scenario_send_question">How much to transfer to recipient\'s wallet?</string>
+    <string name="scenario_send_subtitle">Recipient keeps funds in their phone wallet</string>
+
+    <string name="scenario_for_cash_question">How much CASH does recipient need in hand?</string>
+    <string name="scenario_for_cash_subtitle">We add all fees so they withdraw without losing a cent</string>
+
+    <string name="scenario_withdraw_question">How much CASH do you want to withdraw?</string>
+    <string name="scenario_withdraw_subtitle">Withdrawing physical cash at an agent kiosk</string>
+
+    <string name="scenario_pochi_question">How much are you paying the merchant / vendor?</string>
+    <string name="scenario_pochi_subtitle">Discounted fee for informal merchants (Pochi)</string>
+
+    <!-- Breakdown Row Labels -->
+    <string name="breakdown_send_amount">Amount recipient receives</string>
+    <string name="breakdown_transfer_fee">Transfer fee</string>
+
+    <string name="breakdown_cash_receiver_needs">Cash recipient gets in hand</string>
+    <string name="breakdown_withdrawal_fee_covered">+ Agent withdrawal fee covered</string>
+    <string name="breakdown_send_fee">+ Transfer fee</string>
+    <string name="breakdown_govt_tax">+ Govt. excise tax (%1$s%%)</string>
+    <string name="breakdown_you_must_transfer">👉 Amount you must send them</string>
+
+    <string name="breakdown_cash_to_withdraw">Cash you withdraw at agent</string>
+    <string name="breakdown_agent_fee">+ Agent withdrawal fee</string>
+
+    <string name="breakdown_pochi_payment">Payment to merchant</string>
+    <string name="breakdown_pochi_fee">+ Pochi merchant fee</string>
+
+    <!-- Total Deduction Labels -->
+    <string name="total_deducted_from_account">Total deducted from account</string>
+    <string name="total_balance_needed">Total balance needed to withdraw</string>
+
+    <!-- Calculation Validation / Error Messages -->
+    <string name="error_max_limit">Maximum transaction limit is %1$s %2$s</string>
+    <string name="error_min_limit">Minimum transaction amount is %1$s %2$s</string>
+    <string name="error_min_withdrawal">Minimum withdrawal amount is %1$s %2$s</string>
+    <string name="error_transfer_exceeds_max">The required transfer (%1$s %2$s) exceeds the maximum limit.</string>
+
+    <!-- Numpad & Accessibility -->
+    <string name="numpad_clear">C</string>
+    <string name="numpad_delete">DEL</string>
+    <string name="content_desc_delete">Delete</string>
+    <string name="content_desc_clear">Clear</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.felipelaurindo.mobilemoneycalc.ui
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -13,12 +14,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.felipelaurindo.mobilemoneycalc.R
 import com.felipelaurindo.mobilemoneycalc.model.ProviderConfig
 import com.felipelaurindo.mobilemoneycalc.ui.components.BannerAd
 import com.felipelaurindo.mobilemoneycalc.viewmodel.CalculationMode
@@ -211,7 +214,7 @@ fun ProviderHeaderCard(
                             overflow = TextOverflow.Ellipsis
                         )
                         Text(
-                            text = "Currency: ${selectedProvider.currency}",
+                            text = stringResource(R.string.currency_format, selectedProvider.currency),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Medium,
                             color = TextMuted
@@ -228,7 +231,7 @@ fun ProviderHeaderCard(
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Select Provider",
+                            contentDescription = stringResource(R.string.provider_select_desc),
                             tint = TextDark,
                             modifier = Modifier.size(18.dp)
                         )
@@ -260,7 +263,7 @@ fun ProviderHeaderCard(
                                     fontSize = 13.sp
                                 )
                                 Text(
-                                    text = "Currency: ${provider.currency}",
+                                    text = stringResource(R.string.currency_format, provider.currency),
                                     fontSize = 11.sp,
                                     color = TextMuted
                                 )
@@ -297,7 +300,7 @@ fun ModeSingleRowSelector(
             horizontalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             ModeTab(
-                title = "Send",
+                title = stringResource(R.string.mode_send),
                 icon = "📤",
                 isSelected = currentMode == CalculationMode.SEND_ONLY,
                 brandColor = brandColor,
@@ -306,7 +309,7 @@ fun ModeSingleRowSelector(
                 modifier = Modifier.weight(1f)
             )
             ModeTab(
-                title = "For Cash",
+                title = stringResource(R.string.mode_for_cash),
                 icon = "🤝",
                 isSelected = currentMode == CalculationMode.SEND_FOR_CASH,
                 brandColor = brandColor,
@@ -315,7 +318,7 @@ fun ModeSingleRowSelector(
                 modifier = Modifier.weight(1.15f)
             )
             ModeTab(
-                title = "Withdraw",
+                title = stringResource(R.string.mode_withdraw),
                 icon = "💵",
                 isSelected = currentMode == CalculationMode.WITHDRAW_ONLY,
                 brandColor = brandColor,
@@ -325,7 +328,7 @@ fun ModeSingleRowSelector(
             )
             if (hasPochi) {
                 ModeTab(
-                    title = "Pochi",
+                    title = stringResource(R.string.mode_pochi),
                     icon = "🏪",
                     isSelected = currentMode == CalculationMode.PAY_POCHI,
                     brandColor = brandColor,
@@ -418,19 +421,49 @@ fun SmartReceiptCard(
                 .fillMaxSize()
                 .padding(start = 14.dp, end = 14.dp, top = 8.dp, bottom = 10.dp)
         ) {
-            // Header: Input Mode Label
-            Text(
-                text = when (calculationMode) {
-                    CalculationMode.SEND_ONLY -> "Transfer Amount"
-                    CalculationMode.SEND_FOR_CASH -> "Cash Needed"
-                    CalculationMode.WITHDRAW_ONLY -> "Cash to Withdraw"
-                    CalculationMode.PAY_POCHI -> "Merchant Amount"
+            // Conversational Scenario Question & Supportive Subtitle Header
+            AnimatedContent(
+                targetState = calculationMode,
+                transitionSpec = {
+                    (fadeIn(animationSpec = tween(220)) + slideInVertically(animationSpec = tween(220)) { it / 3 }) togetherWith
+                            (fadeOut(animationSpec = tween(150)) + slideOutVertically(animationSpec = tween(150)) { -it / 3 })
                 },
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = TextMuted,
+                label = "ScenarioHeaderAnimation",
                 modifier = Modifier.fillMaxWidth()
-            )
+            ) { mode ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 3.dp)
+                ) {
+                    Text(
+                        text = when (mode) {
+                            CalculationMode.SEND_ONLY -> stringResource(R.string.scenario_send_question)
+                            CalculationMode.SEND_FOR_CASH -> stringResource(R.string.scenario_for_cash_question)
+                            CalculationMode.WITHDRAW_ONLY -> stringResource(R.string.scenario_withdraw_question)
+                            CalculationMode.PAY_POCHI -> stringResource(R.string.scenario_pochi_question)
+                        },
+                        fontSize = 13.5.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = TextDark,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = when (mode) {
+                            CalculationMode.SEND_ONLY -> stringResource(R.string.scenario_send_subtitle)
+                            CalculationMode.SEND_FOR_CASH -> stringResource(R.string.scenario_for_cash_subtitle)
+                            CalculationMode.WITHDRAW_ONLY -> stringResource(R.string.scenario_withdraw_subtitle)
+                            CalculationMode.PAY_POCHI -> stringResource(R.string.scenario_pochi_subtitle)
+                        },
+                        fontSize = 11.5.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = TextMuted,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
 
             // Big Formatted Input Display
             Text(
@@ -482,46 +515,46 @@ fun SmartReceiptCard(
                     when (uiState.mode) {
                         CalculationMode.SEND_ONLY -> {
                             BreakdownRow(
-                                label = "Amount to Send",
+                                label = stringResource(R.string.breakdown_send_amount),
                                 value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(3.dp))
                             BreakdownRow(
-                                label = "Transfer Fee",
+                                label = stringResource(R.string.breakdown_transfer_fee),
                                 value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
                         }
                         CalculationMode.SEND_FOR_CASH -> {
                             BreakdownRow(
-                                label = "Cash Receiver Needs",
+                                label = stringResource(R.string.breakdown_cash_receiver_needs),
                                 value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
-                            Spacer(modifier = Modifier.height(1.dp))
+                            Spacer(modifier = Modifier.height(1.5.dp))
                             BreakdownRow(
-                                label = "Withdrawal Fee to Cover",
+                                label = stringResource(R.string.breakdown_withdrawal_fee_covered),
                                 value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
                             if (uiState.governmentTax > 0.0) {
-                                Spacer(modifier = Modifier.height(1.dp))
+                                Spacer(modifier = Modifier.height(1.5.dp))
                                 BreakdownRow(
-                                    label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
+                                    label = stringResource(R.string.breakdown_govt_tax, selectedProvider.taxPercentage.toString()),
                                     value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
                             }
-                            Spacer(modifier = Modifier.height(1.dp))
+                            Spacer(modifier = Modifier.height(1.5.dp))
                             BreakdownRow(
-                                label = "Send Fee",
+                                label = stringResource(R.string.breakdown_send_fee),
                                 value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
-                            Spacer(modifier = Modifier.height(1.dp))
+                            Spacer(modifier = Modifier.height(1.5.dp))
                             BreakdownRow(
-                                label = "You Must Transfer",
+                                label = stringResource(R.string.breakdown_you_must_transfer),
                                 value = "${formatCurrency(uiState.youMustSend)} ${selectedProvider.currency}",
                                 highlight = true,
                                 accentColor = accentColor
@@ -529,20 +562,20 @@ fun SmartReceiptCard(
                         }
                         CalculationMode.WITHDRAW_ONLY -> {
                             BreakdownRow(
-                                label = "Cash to Withdraw",
+                                label = stringResource(R.string.breakdown_cash_to_withdraw),
                                 value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(3.dp))
                             BreakdownRow(
-                                label = "Agent Withdrawal Fee",
+                                label = stringResource(R.string.breakdown_agent_fee),
                                 value = "${formatCurrency(uiState.withdrawalFee)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
                             if (uiState.governmentTax > 0.0) {
-                                Spacer(modifier = Modifier.height(2.dp))
+                                Spacer(modifier = Modifier.height(3.dp))
                                 BreakdownRow(
-                                    label = "Govt. Tax (${selectedProvider.taxPercentage}%)",
+                                    label = stringResource(R.string.breakdown_govt_tax, selectedProvider.taxPercentage.toString()),
                                     value = "${formatCurrency(uiState.governmentTax)} ${selectedProvider.currency}",
                                     accentColor = accentColor
                                 )
@@ -550,13 +583,13 @@ fun SmartReceiptCard(
                         }
                         CalculationMode.PAY_POCHI -> {
                             BreakdownRow(
-                                label = "Payment to Merchant",
+                                label = stringResource(R.string.breakdown_pochi_payment),
                                 value = "${formatCurrency(uiState.baseAmount)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
-                            Spacer(modifier = Modifier.height(2.dp))
+                            Spacer(modifier = Modifier.height(3.dp))
                             BreakdownRow(
-                                label = "Pochi Merchant Fee",
+                                label = stringResource(R.string.breakdown_pochi_fee),
                                 value = "${formatCurrency(uiState.sendFee)} ${selectedProvider.currency}",
                                 accentColor = accentColor
                             )
@@ -564,7 +597,7 @@ fun SmartReceiptCard(
                     }
                 }
 
-                HorizontalDivider(color = CardBorder, thickness = 1.dp, modifier = Modifier.padding(top = 4.dp, bottom = 6.dp))
+                HorizontalDivider(color = CardBorder, thickness = 1.dp, modifier = Modifier.padding(top = 4.dp, bottom = 4.dp))
 
                 // Bottom Highlighted Total Row (Generous bottom spacing)
                 Row(
@@ -575,8 +608,12 @@ fun SmartReceiptCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = if (uiState.mode == CalculationMode.WITHDRAW_ONLY) "Total from Balance" else "Total Deducted",
-                        fontSize = 13.sp,
+                        text = if (uiState.mode == CalculationMode.WITHDRAW_ONLY) {
+                            stringResource(R.string.total_balance_needed)
+                        } else {
+                            stringResource(R.string.total_deducted_from_account)
+                        },
+                        fontSize = 13.5.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextDark
                     )
@@ -594,7 +631,7 @@ fun SmartReceiptCard(
                         label = "TotalAmountAnimation"
                     ) { targetTotal ->
                         val formattedTotal = "${formatCurrency(targetTotal)} ${selectedProvider.currency}"
-                        val totalFontSize = if (formattedTotal.length > 13) 16.sp else if (formattedTotal.length > 10) 18.sp else 20.sp
+                        val totalFontSize = if (formattedTotal.length > 13) 18.sp else if (formattedTotal.length > 10) 20.sp else 22.sp
                         Text(
                             text = formattedTotal,
                             fontSize = totalFontSize,
@@ -622,15 +659,20 @@ fun BreakdownRow(
     ) {
         Text(
             text = label,
-            fontSize = 12.sp,
+            fontSize = if (highlight) 13.5.sp else 13.sp,
             color = if (highlight) accentColor else TextMuted,
-            fontWeight = if (highlight) FontWeight.Bold else FontWeight.Medium
+            fontWeight = if (highlight) FontWeight.Bold else FontWeight.Medium,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f, fill = false)
         )
+        Spacer(modifier = Modifier.width(6.dp))
         Text(
             text = value,
-            fontSize = 12.sp,
+            fontSize = if (highlight) 14.5.sp else 13.5.sp,
             fontWeight = if (highlight) FontWeight.ExtraBold else FontWeight.Bold,
-            color = if (highlight) accentColor else TextDark
+            color = if (highlight) accentColor else TextDark,
+            maxLines = 1
         )
     }
 }
@@ -668,9 +710,9 @@ fun CustomNumpad(
             NumpadButton(text = "9", onClick = { onNumberClick("9") }, modifier = Modifier.weight(1f))
         }
         Row(modifier = rowModifier, horizontalArrangement = Arrangement.spacedBy(7.dp)) {
-            NumpadButton(text = "C", isClear = true, onClick = onClearClick, modifier = Modifier.weight(1f))
+            NumpadButton(text = stringResource(R.string.numpad_clear), isClear = true, onClick = onClearClick, modifier = Modifier.weight(1f))
             NumpadButton(text = "0", onClick = { onNumberClick("0") }, modifier = Modifier.weight(1f))
-            NumpadButton(text = "DEL", isDelete = true, onClick = onDeleteClick, modifier = Modifier.weight(1f))
+            NumpadButton(text = stringResource(R.string.numpad_delete), isDelete = true, onClick = onDeleteClick, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -711,7 +753,7 @@ fun NumpadButton(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Outlined.Backspace,
-                contentDescription = "Delete",
+                contentDescription = stringResource(R.string.content_desc_delete),
                 modifier = Modifier.size(22.dp),
                 tint = TextDark
             )
