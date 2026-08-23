@@ -38,7 +38,6 @@ fun BannerAd(modifier: Modifier = Modifier) {
         modifier = modifier
             .fillMaxWidth()
             .background(LightBackground)
-            .statusBarsPadding()
             .height(BANNER_HEIGHT),
         contentAlignment = Alignment.Center
     ) {

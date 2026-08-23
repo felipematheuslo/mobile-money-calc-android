@@ -2,18 +2,20 @@ package com.felipelaurindo.mobilemoneycalc
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.view.WindowCompat
 import com.felipelaurindo.mobilemoneycalc.ui.CalculatorScreen
 import com.felipelaurindo.mobilemoneycalc.ui.LightBackground
-import com.felipelaurindo.mobilemoneycalc.ui.components.BannerAd
 import com.felipelaurindo.mobilemoneycalc.ui.theme.MobileMoneyCalcTheme
 import com.google.android.gms.ads.MobileAds
 
@@ -22,19 +24,34 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Initialize AdMob SDK once on launch
         MobileAds.initialize(this)
-        enableEdgeToEdge()
+        
+        // Force light status bar and navigation bar styles (dark icons on light background)
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            ),
+            navigationBarStyle = SystemBarStyle.light(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            )
+        )
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = true
+            isAppearanceLightNavigationBars = true
+        }
+
         setContent {
             MobileMoneyCalcTheme {
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(LightBackground)
+                        .statusBarsPadding()
                         .navigationBarsPadding()
                 ) {
-                    // Fixed top banner with pre-allocated height to prevent UI jumps
-                    BannerAd()
-                    // Main calculator content filling remaining vertical space
-                    CalculatorScreen(modifier = Modifier.weight(1f))
+                    // Calculator screen containing header, mode tabs, receipt, middle ad, and numpad
+                    CalculatorScreen(modifier = Modifier.fillMaxSize())
                 }
             }
         }
@@ -50,8 +67,7 @@ fun CalculatorPreview() {
                 .fillMaxSize()
                 .background(LightBackground)
         ) {
-            BannerAd()
-            CalculatorScreen(modifier = Modifier.weight(1f))
+            CalculatorScreen(modifier = Modifier.fillMaxSize())
         }
     }
 }
