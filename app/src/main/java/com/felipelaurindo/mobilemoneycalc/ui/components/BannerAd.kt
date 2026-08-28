@@ -20,8 +20,8 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 
-// Google AdMob Sample Test Banner Ad Unit ID
-const val BANNER_AD_UNIT_ID = "ca-app-pub-3940256099942544/6300978111"
+// Google AdMob Banner Ad Unit ID
+const val BANNER_AD_UNIT_ID = "ca-app-pub-7364145551999763/6100213295"
 
 // Pre-allocated height for standard banner (50dp) to prevent Cumulative Layout Shift (CLS)
 val BANNER_HEIGHT = 50.dp
