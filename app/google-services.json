@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "727317846836",
+    "project_id": "mobile-money-calculator-b4d64",
+    "storage_bucket": "mobile-money-calculator-b4d64.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:727317846836:android:8cf39bd1add79e4229a361",
+        "android_client_info": {
+          "package_name": "com.felipelaurindo.mobilemoneycalc"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkji7m6RWu6XAMy4y58ESu9MqCOEdEcrg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
