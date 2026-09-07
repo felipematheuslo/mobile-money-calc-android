@@ -1,4 +1,24 @@
+<div align="center">
+
 # 📱 Mobile Money Calculator (East Africa)
+
+**A high-performance, 100% offline, zero-friction financial utility app built for East African mobile money networks (Kenya & Uganda).**
+
+[![Google Play](https://img.shields.io/badge/Google_Play-Live_on_Store-34A853?style=for-the-badge&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.felipelaurindo.mobilemoneycalc)
+[![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=for-the-badge&logo=kotlin&logoColor=white)](https://kotlinlang.org/)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack_Compose-Material_3-4285F4?style=for-the-badge&logo=android&logoColor=white)](https://developer.android.com/jetpack/compose)
+[![Offline-First](https://img.shields.io/badge/Offline--First-100%25_Offline-10B981?style=for-the-badge)](https://github.com/felipematheuslo/mobile-money-calc-android)
+[![JUnit](https://img.shields.io/badge/JUnit_4-Testing_Suite-25A162?style=for-the-badge&logo=junit5&logoColor=white)](https://junit.org)
+
+<br /><br />
+
+<a href="https://play.google.com/store/apps/details?id=com.felipelaurindo.mobilemoneycalc" target="_blank">
+  <img src="media-content/print2.jpg" alt="Mobile Money Calculator App Interface" width="280" style="border-radius: 16px;" />
+</a>
+
+</div>
+
+---
 
 A high-performance, **100% offline**, zero-friction financial utility app built for the African market (Kenya, Uganda, and expanding soon). 
 
