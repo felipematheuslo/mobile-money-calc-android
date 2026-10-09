@@ -20,7 +20,7 @@
     <string name="mode_pochi">Pochi</string>
 
     <!-- Conversational Scenario Questions (Card Header) -->
-    <string name="scenario_send_question">Unataka kutuma kiasi gani kwenye simu ya mpokeaji?</string>
+    <string name="scenario_send_question">Unataka kutuma kiasi gani kwa mpokeaji?</string>
     <string name="scenario_send_subtitle">Mpokeaji anabaki na pesa kwenye simu yake</string>
 
     <string name="scenario_for_cash_question">Mpokeaji anahitaji kiasi gani TASLIMU mkononi?</string>

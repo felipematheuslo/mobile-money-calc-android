@@ -585,8 +585,7 @@ fun SmartReceiptCard(
                         fontSize = 13.5.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextDark,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = 2
                     )
                     Text(
                         text = when (mode) {
@@ -598,8 +597,7 @@ fun SmartReceiptCard(
                         fontSize = 11.5.sp,
                         fontWeight = FontWeight.Medium,
                         color = TextMuted,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        maxLines = 2
                     )
                 }
             }
