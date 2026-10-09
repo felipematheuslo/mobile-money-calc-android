@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MomoCalc: Mobile Money Fees</string>
+    <string name="app_name">MomoCalc</string>
 
     <!-- Provider Header & Selection -->
     <string name="provider_select_desc">Select Provider</string>

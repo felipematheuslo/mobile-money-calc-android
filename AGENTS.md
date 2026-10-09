@@ -187,3 +187,106 @@ The repository includes a comprehensive JUnit test suite in `app/src/test/java/c
 > 2. **Maintain 100% i18n:** Never hardcode user-visible text in Kotlin composables. Always declare and reference keys in `strings.xml`.
 > 3. **Run Automated Test Suite:** Execute `./gradlew testDebugUnitTest` immediately to verify that no reverse math calculations or threshold limits have regressed.
 
+## 9. App Store Optimization (ASO) & Play Store Metadata
+
+This project strictly decouples the device app name from the Play Store ASO title to maintain both brand clarity and search engine visibility.
+- **Device App Name (`app_name` in strings.xml):** `MomoCalc` (Ensures clean, untruncated launcher icon).
+- **Play Store Title:** `Fee Calc for M-Pesa & MoMo` (Rich in keywords, compliant with Google\'s impersonation policy using the \"for\" preposition).
+
+### English (Default - en-US)
+* **Title (30 chars):** Fee Calc for M-Pesa & MoMo
+* **Short Description (80 chars):** Calculate M-Pesa, MTN MoMo & Airtel transfer and agent cash-out fees offline.
+* **Full Description:**
+```text
+Never guess or argue about Mobile Money charges again! MomoCalc is the fast, accurate, and 100% offline Mobile Money fee calculator built specifically for East Africa (Kenya & Uganda).
+
+Whether you are sending money to family, buying groceries with merchant payments, or withdrawing cash at an agent kiosk, MomoCalc instantly computes exact transfer fees, cash-out rates, and statutory government taxes with zero internet needed.
+
+🌟 THE 4 SMART CALCULATION MODES
+
+1. 🤝 "SEND FOR CASH" (Reverse Math Calculator) — Killer Feature
+Need your recipient to receive the EXACT net amount in physical cash from an agent?
+• Just enter the cash amount they need in hand (e.g. 1,000 KES or 50,000 UGX).
+• MomoCalc automatically computes the agent cash-out fee, adds statutory excise taxes (e.g. 0.5% in Uganda), and determines the exact transfer amount you must send so they withdraw without losing a single cent.
+
+2. 📤 "SEND ONLY" (Wallet to Wallet Transfer)
+Calculate the exact deduction when transferring funds directly to another person's mobile wallet (on-net or off-net).
+
+3. 💵 "WITHDRAW ONLY" (Agent Cash-Out)
+Standing at an agent counter or kiosk? Know the exact agent withdrawal fee and total balance needed before you transact.
+
+4. 🏪 "PAY POCHI" (Merchant Payments)
+Calculate discounted merchant transfer rates for Safaricom Kenya's Pochi La Biashara (capped at a flat 50 KES fee).
+
+🌍 SUPPORTED COUNTRIES & OPERATORS
+All tariff bands and tax thresholds are pre-loaded and regularly updated (verified: October 2026):
+
+🇰🇪 KENYA
+• Safaricom M-Pesa (P2P Transfers, Agent Cash-Out, ATM, and Pochi La Biashara)
+
+🇺🇬 UGANDA
+• MTN Mobile Money (MoMo) — includes statutory 0.5% government excise tax calculation
+• Airtel Money Uganda — includes on-net/off-net rates and agent withdrawal taxes
+
+*Upcoming additions to more African countries coming soon.
+
+⚡ KEY HIGHLIGHTS & FEATURES
+• 🛡️ Real-Time Transaction Limit Alerts: Instant warning if an amount exceeds regulatory maximum caps (e.g. 250,000 KES or 5,000,000 UGX) or falls below agent kiosk minimums.
+• ⌨️ Large Ergonomic Numpad: Custom numeric keypad covering the bottom of your screen for lightning-fast, one-handed operation. No waiting for the system keyboard.
+• 🚀 100% Offline & Private: No internet data required, zero account sign-ups, zero tracking, and instant cold launch in under 100ms.
+• 🔋 Lightweight & Battery Friendly: Highly optimized for Android Go and entry-level smartphones.
+
+Download MomoCalc today and take total control of your Mobile Money transaction fees!
+
+DISCLAIMER:
+MomoCalc is an independent utility tool designed for fee calculations. It is not affiliated with, endorsed, or sponsored by Safaricom, MTN, Airtel, or any mobile network operator. All trademarks and brand names belong to their respective owners.
+```
+
+### Swahili / Kiswahili (sw-KE)
+* **Title (30 chars):** Kikokotoo cha M-Pesa & MoMo
+* **Short Description (80 chars):** Kokotoa makato ya kutoa na kutuma pesa taslimu kwa M-Pesa, MTN na Airtel.
+* **Full Description:**
+```text
+Usikisie au kubishana tena kuhusu makato ya kutuma na kutoa pesa! MomoCalc ni kikokotoo cha haraka, sahihi, na kinachofanya kazi 100% bila intaneti, kikiwa kimetengenezwa maalum kwa ajili ya Afrika Mashariki (Kenya na Uganda).
+
+Iwe unatuma pesa kwa familia, unalipa wafanyabiashara kupitia Pochi, au unatoa pesa taslimu kwa wakala, MomoCalc inakokotoa papo hapo gharama za kutuma, makato ya kutoa, na kodi za serikali bila kuhitaji intaneti (offline).
+
+🌟 NJIA 4 ZA KUKOKOTOA KIJANJA
+
+1. 🤝 "KUTUMA KWA TASLIMU" (Hesabu za Kurudi Nyuma) — Kipengele Muhimu
+Unahitaji mpokeaji apate kiasi KAMILI cha pesa taslimu mkononi kutoka kwa wakala?
+• Weka tu kiasi cha pesa taslimu anachohitaji mkononi (k.m., 1,000 KES au 50,000 UGX).
+• MomoCalc itakokotoa makato ya wakala, itaongeza kodi ya serikali, na kukuambia kiasi halisi cha kutuma ili atoe bila kupoteza hata senti moja.
+
+2. 📤 "KUTUMA TU" (Kutoka Simu hadi Simu)
+Kokotoa makato sahihi unapohamisha pesa moja kwa moja kwenye simu ya mtu mwingine.
+
+3. 💵 "KUTOA TASLIMU" (Kutoa kwa Wakala)
+Uko kwa wakala? Jua makato kamili ya kutoa na salio linalohitajika kwenye akaunti kabla ya kufanya muamala.
+
+4. 🏪 "KULIPA POCHI" (Kwa Wafanyabiashara)
+Kokotoa gharama zilizopunguzwa ukitumia Pochi La Biashara kutoka Safaricom Kenya (kikomo cha juu cha makato ni 50 KES).
+
+🌍 NCHI NA MITANDAO INAYOSAIDIWA
+Viwango vyote vya ushuru na kodi vimewekwa tayari na vinasasishwa (Imethibitishwa: Oktoba 2026):
+
+🇰🇪 KENYA
+• Safaricom M-Pesa
+
+🇺🇬 UGANDA
+• MTN Mobile Money (MoMo) — pamoja na kodi ya serikali ya 0.5%
+• Airtel Money Uganda
+
+*Nchi zaidi za Kiafrika zitaongezwa hivi karibuni.
+
+⚡ VIPENGELE MUHIMU
+• 🛡️ Maonyo ya Viwango vya Muamala: Utapata onyo papo hapo kama kiasi kikizidi kikomo (k.m., 250,000 KES) au kikiwa chini ya kiwango cha chini cha kutoa pesa.
+• ⌨️ Kitufe Kikubwa cha Namba: Kitufe maalum kwenye skrini kwa matumizi ya haraka ya mkono mmoja, bila kusubiri kibodi ya simu kufunguka.
+• 🚀 100% Haina Intaneti & Kwa Faragha: Huhitaji data, huhitaji kufungua akaunti, na hakuna taarifa zako kufuatiliwa (zero tracking).
+• 🔋 Nyepesi kwa Betri: Imetengenezwa maalum kwa simu za Android Go na simu za kawaida.
+
+Pakua MomoCalc leo na udhibiti kikamilifu makato yako ya Mobile Money!
+
+KANUSHO:
+MomoCalc ni zana huru iliyoundwa kwa ajili ya kukokotoa gharama na makato. Haina uhusiano, kuidhinishwa, au kufadhiliwa na Safaricom, MTN, Airtel, au mtandao wowote wa simu. Majina ya chapa ni miliki ya wamiliki wao.
+```

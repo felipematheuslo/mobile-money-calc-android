@@ -13,6 +13,7 @@ class TariffCalculationTest {
     private lateinit var mpesaKe: ProviderConfig
     private lateinit var mtnUg: ProviderConfig
     private lateinit var airtelUg: ProviderConfig
+    private lateinit var mpesaTz: ProviderConfig
 
     @Before
     fun setUp() {
@@ -20,6 +21,7 @@ class TariffCalculationTest {
         mpesaKe = providers.first { it.id == "mpesa_ke" }
         mtnUg = providers.first { it.id == "mtn_ug" }
         airtelUg = providers.first { it.id == "airtel_ug" }
+        mpesaTz = providers.first { it.id == "mpesa_tz" }
     }
 
     // =========================================================================
@@ -310,11 +312,46 @@ class TariffCalculationTest {
 
     @Test
     fun testAllProvidersHaveCompleteAndNonEmptyTariffs() {
-        assertEquals("Total registered providers count", 3, providers.size)
+        assertEquals("Total registered providers count", 4, providers.size)
         for (provider in providers) {
             assertTrue("Provider ${provider.providerName} must have tariffs", provider.tariffs.isNotEmpty())
             assertTrue("Provider ${provider.currency} currency must not be blank", provider.currency.isNotBlank())
             assertTrue("Provider ${provider.country} country must not be blank", provider.country.isNotBlank())
         }
+    }
+
+    // =========================================================================
+    // 🇹🇿 4. VODACOM M-PESA (TANZANIA) — JSON MAPPING TESTS
+    // =========================================================================
+
+    @Test
+    fun testVodacomTanzaniaSchemaAndLimits() {
+        assertEquals("Tanzania", mpesaTz.country)
+        assertEquals("Vodacom M-Pesa", mpesaTz.providerName)
+        assertEquals("TZS", mpesaTz.currency)
+        assertFalse("Tanzania tax is included in total withdrawal fee", mpesaTz.hasGovernmentTax)
+        assertEquals(0.0, mpesaTz.taxPercentage, 0.001)
+        assertEquals(1, mpesaTz.tariffs.minOf { it.min })
+        assertEquals(5000000, mpesaTz.tariffs.maxOf { it.max })
+        assertNull("Tanzania does not have Pochi La Biashara", mpesaTz.pochiTariffs)
+    }
+
+    @Test
+    fun testVodacomTanzaniaSendOnly() {
+        val band500 = mpesaTz.tariffs.find { 500 in it.min..it.max }!!
+        assertEquals(10.0, band500.transferOnNet, 0.001)
+
+        val band150k = mpesaTz.tariffs.find { 150000 in it.min..it.max }!!
+        assertEquals(1000.0, band150k.transferOnNet, 0.001)
+        assertEquals(1440.0, band150k.transferOffNet, 0.001)
+    }
+
+    @Test
+    fun testVodacomTanzaniaWithdrawalTotalFee() {
+        val band2500 = mpesaTz.tariffs.find { 2500 in it.min..it.max }!!
+        assertEquals(410.0, band2500.withdrawalAgent!!, 0.001)
+
+        val band350k = mpesaTz.tariffs.find { 350000 in it.min..it.max }!!
+        assertEquals(7338.0, band350k.withdrawalAgent!!, 0.001)
     }
 }

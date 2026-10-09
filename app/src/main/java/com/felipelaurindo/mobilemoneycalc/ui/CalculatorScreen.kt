@@ -55,6 +55,7 @@ fun getCountryFlag(country: String): String = when (country.lowercase()) {
 fun getProviderBrandColor(providerId: String): Color = when (providerId) {
     "mtn_ug" -> Color(0xFFFFCC00) // MTN Sunshine Yellow
     "airtel_ug" -> Color(0xFFED1C24) // Airtel Red
+    "mpesa_tz" -> Color(0xFFE60000) // Vodacom Red
     else -> Color(0xFF00B365) // Safaricom Green
 }
 
@@ -66,7 +67,8 @@ fun getProviderOnBrandColor(providerId: String): Color = when (providerId) {
 fun getProviderAccentColor(providerId: String): Color = when (providerId) {
     "mtn_ug" -> Color(0xFFB45309) // Amber-700 for text on white background
     "airtel_ug" -> Color(0xFFED1C24)
-    else -> Color(0xFF00B365)
+    "mpesa_tz" -> Color(0xFFE60000) // Vodacom Red
+    else -> Color(0xFF00B365) // Safaricom Green default
 }
 
 @Composable
@@ -752,7 +754,10 @@ fun SmartReceiptCard(
                         },
                         fontSize = 13.5.sp,
                         fontWeight = FontWeight.Bold,
-                        color = TextDark
+                        color = TextDark,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp) // Add spacing between label and amount
                     )
                     AnimatedContent(
                         targetState = uiState.totalRequired,
@@ -773,7 +778,10 @@ fun SmartReceiptCard(
                             text = formattedTotal,
                             fontSize = totalFontSize,
                             fontWeight = FontWeight.ExtraBold,
-                            color = accentColor
+                            color = accentColor,
+                            textAlign = TextAlign.End,
+                            maxLines = 1,
+                            softWrap = false // Prevent breaking currency to the next line
                         )
                     }
                 }
@@ -799,9 +807,7 @@ fun BreakdownRow(
             fontSize = if (highlight) 13.5.sp else 13.sp,
             color = if (highlight) accentColor else TextMuted,
             fontWeight = if (highlight) FontWeight.Bold else FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f, fill = false)
+            modifier = Modifier.weight(1f)
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
@@ -809,7 +815,9 @@ fun BreakdownRow(
             fontSize = if (highlight) 14.5.sp else 13.5.sp,
             fontWeight = if (highlight) FontWeight.ExtraBold else FontWeight.Bold,
             color = if (highlight) accentColor else TextDark,
-            maxLines = 1
+            maxLines = 1,
+            softWrap = false,
+            textAlign = TextAlign.End
         )
     }
 }
